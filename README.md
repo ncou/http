@@ -6,7 +6,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/chiron/http.svg?style=flat-square)](https://packagist.org/packages/chiron/http/stats)
 [![Monthly Downloads](https://img.shields.io/packagist/dm/chiron/http.svg?style=flat-square)](https://packagist.org/packages/chiron/http/stats)
 
-[![StyleCI](https://styleci.io/repos/135636466/shield?style=flat)](https://styleci.io/repos/135636466)
+[![StyleCI](https://styleci.io/repos/136793760/shield?style=flat)](https://styleci.io/repos/136793760)
 [![PHP-Eye](https://php-eye.com/badge/chiron/http/tested.svg?style=flat)](https://php-eye.com/package/chiron/http)
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat)](https://github.com/phpstan/phpstan)
 
