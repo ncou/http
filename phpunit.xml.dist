@@ -13,14 +13,27 @@
          bootstrap="vendor/autoload.php"
          >
     <testsuites>
-        <testsuite name="Chiron Http Tests">
+        <testsuite name="Chiron PSR7 Http Tests">
             <directory>tests/</directory>
+        </testsuite>
+
+        <testsuite name="Factories PSR17 Integration tests">
+            <directory>./vendor/http-interop/http-factory-tests/test</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory>src/</directory>
+            <directory suffix=".php">src/</directory>
         </whitelist>
     </filter>
+
+    <php>
+        <const name="REQUEST_FACTORY" value="Chiron\Http\Factory\RequestFactory"/>
+        <const name="RESPONSE_FACTORY" value="Chiron\Http\Factory\ResponseFactory"/>
+        <const name="SERVER_REQUEST_FACTORY" value="Chiron\Http\Factory\ServerRequestFactory"/>
+        <const name="UPLOADED_FILE_FACTORY" value="Chiron\Http\Factory\UploadedFileFactory"/>
+        <const name="URI_FACTORY" value="Chiron\Http\Factory\UriFactory"/>
+        <const name="STREAM_FACTORY" value="Chiron\Http\Factory\StreamFactory"/>
+    </php>
 </phpunit>
