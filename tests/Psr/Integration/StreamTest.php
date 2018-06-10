@@ -2,8 +2,8 @@
 
 namespace Tests\Http\Psr\Integration;
 
-use Http\Psr7Test\StreamIntegrationTest;
 use Chiron\Http\Factory\StreamFactory;
+use Http\Psr7Test\StreamIntegrationTest;
 
 class StreamTest extends StreamIntegrationTest
 {

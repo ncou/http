@@ -2,8 +2,8 @@
 
 namespace Tests\Http\Psr\Integration;
 
-use Http\Psr7Test\ServerRequestIntegrationTest;
 use Chiron\Http\Factory\ServerRequestFactory;
+use Http\Psr7Test\ServerRequestIntegrationTest;
 
 class ServerRequestTest extends ServerRequestIntegrationTest
 {

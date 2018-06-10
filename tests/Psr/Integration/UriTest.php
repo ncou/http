@@ -2,8 +2,8 @@
 
 namespace Tests\Http\Psr\Integration;
 
-use Http\Psr7Test\UriIntegrationTest;
 use Chiron\Http\Factory\UriFactory;
+use Http\Psr7Test\UriIntegrationTest;
 
 class UriTest extends UriIntegrationTest
 {

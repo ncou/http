@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Chiron\Http\Factory;
 
-use Interop\Http\Factory\RequestFactoryInterface;
 use Chiron\Http\Psr\Request;
+use Interop\Http\Factory\RequestFactoryInterface;
 
 class RequestFactory implements RequestFactoryInterface
 {

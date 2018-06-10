@@ -2,8 +2,8 @@
 
 namespace Tests\Http\Psr\Integration;
 
-use Http\Psr7Test\UploadedFileIntegrationTest;
 use Chiron\Http\Factory\UploadedFileFactory;
+use Http\Psr7Test\UploadedFileIntegrationTest;
 
 class UploadedFileTest extends UploadedFileIntegrationTest
 {
