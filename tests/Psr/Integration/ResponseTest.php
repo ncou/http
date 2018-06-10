@@ -2,8 +2,8 @@
 
 namespace Tests\Http\Psr\Integration;
 
-use Http\Psr7Test\ResponseIntegrationTest;
 use Chiron\Http\Psr\Response;
+use Http\Psr7Test\ResponseIntegrationTest;
 
 class ResponseTest extends ResponseIntegrationTest
 {
