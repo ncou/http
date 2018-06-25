@@ -775,10 +775,6 @@ class Response implements ResponseInterface
      * Response Helper
      ******************************************************************************/
 
-
-
-
-
     /**
      * Determine if the given content should be turned into JSON.
      * Note: This method is not part of the PSR-7 standard.

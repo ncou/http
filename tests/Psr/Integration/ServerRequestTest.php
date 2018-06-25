@@ -10,7 +10,7 @@ class ServerRequestTest extends ServerRequestIntegrationTest
     public function createSubject()
     {
         $_SERVER['REQUEST_METHOD'] = 'GET';
-        $_SERVER['REQUEST_URI']    = '/';
+        $_SERVER['REQUEST_URI'] = '/';
 
         return (new ServerRequestFactory())->createServerRequestFromArray($_SERVER);
     }

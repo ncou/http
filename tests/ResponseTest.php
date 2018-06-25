@@ -212,7 +212,7 @@ class ResponseTest extends TestCase
         $this->assertSame('URLENCODED', $r->detectFormat());
     }
 
-    /**
+    /*
      * @covers Chiron\Http\Response::withRedirect
      */
     /*
