@@ -165,7 +165,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
         return $serverRequest
             ->withCookieParams($_COOKIE)
             ->withQueryParams($_GET)
-            ->withParsedBody($_POST)
+            ->withParsedBody(empty($_POST) ? null : $_POST)
             ->withUploadedFiles($this->normalizeFiles($_FILES)); // TODO : il manque un appel à normalizeFiles directement dans le constructeur !!!!! => $files   = static::normalizeFiles($files ?: $_FILES);
     }
 
@@ -179,14 +179,14 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
     public function marshalUriFromServer(array $server)
     {
         $uri = new Uri('');
-        // TODO : vérifier si on a vraiment besoin d'alimenter le scheme. actuellement cela n'est pas fait dans les autres factories.
-        //$uri = $uri->withScheme(! empty($server['HTTPS']) && $server['HTTPS'] !== 'off' ? 'https' : 'http');
 
+        $scheme = 'http';
         if (isset($server['REQUEST_SCHEME'])) {
-            $uri = $uri->withScheme($server['REQUEST_SCHEME']);
-        } elseif (isset($server['HTTPS'])) {
-            $uri = $uri->withScheme('on' === $server['HTTPS'] ? 'https' : 'http');
+            $scheme = $server['REQUEST_SCHEME'];
+        } elseif (isset($server['HTTPS']) && $server['HTTPS'] === 'on') {
+            $scheme = 'https';
         }
+        $uri = $uri->withScheme($scheme);
 
         $hasPort = false;
         if (isset($server['HTTP_HOST'])) {

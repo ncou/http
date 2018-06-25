@@ -775,90 +775,9 @@ class Response implements ResponseInterface
      * Response Helper
      ******************************************************************************/
 
-    /**
-     * Redirect.
-     *
-     * Note: This method is not part of the PSR-7 standard.
-     *
-     * This method prepares the response object to return an HTTP Redirect
-     * response to the client.
-     *
-     * @param string|UriInterface $url    the redirect destination
-     * @param int|null            $status the redirect HTTP status code
-     *
-     * @return static
-     */
-    // TODO : vérifier ce code pour gérer le cas du 308 et 307 pour les redirections avec une méthode POST : https://github.com/middlewares/redirect/blob/master/src/Redirect.php#L89
-    // TODO : utiliser une classe RedirectResponse et ajouter un body avec un lien hypertext (cf spec : https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.2), plus gestion du cache pour les redirections 301 : cf les classes Symfony.
-    public function withRedirect($url, $status = null)
-    {
-        $responseWithRedirect = $this->withHeader('Location', (string) $url);
-        if (is_null($status) && $this->getStatusCode() === 200) {
-            $status = 302;
-        }
-        if (! is_null($status)) {
-            // TODO : on devrait pas vérifier si le code est dans l'interval 3xx ?????
-            $responseWithRedirect = $responseWithRedirect->withStatus($status);
-        }
 
-        // a message is better when doing a redirection.
-        $urlHtml = htmlentities($url);
-        $responseWithRedirect->getBody()->write('You are being redirected to <a href="' . $urlHtml . '">' . $urlHtml . '</a>', 'text/html');
 
-        return $responseWithRedirect;
-    }
 
-    /**
-     * Json.
-     *
-     * Note: This method is not part of the PSR-7 standard.
-     *
-     * This method prepares the response object to return an HTTP Json
-     * response to the client.
-     *
-     * @param mixed $data            The data
-     * @param int   $status          the HTTP status code
-     * @param int   $encodingOptions Json encoding options
-     *
-     * @throws \RuntimeException
-     *
-     * @return static
-     */
-    //https://github.com/zendframework/zend-diactoros/blob/master/src/Response/JsonResponse.php
-    //TODO : faire un clone de la réponse et retourner ce clone : https://github.com/slimphp/Slim/blob/c9a768c5a062c5f1aaa0a588d7bb90e8ce18bfd6/Slim/Http/Response.php#L346
-
-    //https://github.com/symfony/http-foundation/blob/master/JsonResponse.php
-    // Encode <, >, ', &, and " characters in the JSON, making it also safe to be embedded into HTML.
-    // Encode <, >, ', &, and " for RFC4627-compliant JSON, which may also be embedded into HTML.
-    // 15 === JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
-    /*
-    const DEFAULT_ENCODING_OPTIONS = 15;
-    protected $encodingOptions = self::DEFAULT_ENCODING_OPTIONS;
-*/
-    //TODO : à renommer en "writeJson()" ????? ou plutot en withJsonBody
-    public function withJson($data, $status = null, $encodingOptions = 79)
-    {
-        // default encodingOptions is 79 => JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES
-
-        //$response = $this->withBody(new Body('php://temp', 'r+'));
-        //$response->stream->write($json = json_encode($data, $encodingOptions));
-
-        $body = StreamFactory::createFromStringOrResource('php://temp', 'r+');
-        $body->write($json = json_encode($data, $encodingOptions));
-
-        $response = $this->withBody($body);
-
-        // Ensure that the json encoding passed successfully
-        if ($json === false) {
-            throw new \RuntimeException(json_last_error_msg(), json_last_error());
-        }
-        $responseWithJson = $response->withHeader('Content-Type', 'application/json;charset=utf-8');
-        if (isset($status)) {
-            return $responseWithJson->withStatus($status);
-        }
-
-        return $responseWithJson;
-    }
 
     /**
      * Determine if the given content should be turned into JSON.

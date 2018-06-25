@@ -215,6 +215,7 @@ class ResponseTest extends TestCase
     /**
      * @covers Chiron\Http\Response::withRedirect
      */
+    /*
     public function testWithRedirect()
     {
         $r = $this->createResponse(200);
@@ -236,7 +237,7 @@ class ResponseTest extends TestCase
         $this->assertSame(301, $cloneWithStatusMethod->getStatusCode());
         $this->assertTrue($cloneWithStatusMethod->hasHeader('Location'));
         $this->assertEquals('/foo', $cloneWithStatusMethod->getHeaderLine('Location'));
-    }
+    }*/
 
     /*
         public function testWithJson()
