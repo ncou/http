@@ -13,12 +13,17 @@ use Psr\Http\Message\UriInterface;
  */
 class UriFactory implements UriFactoryInterface
 {
-    public function createUri($uri = ''): UriInterface
+    /**
+     * Create a new URI.
+     *
+     * @param string $uri
+     *
+     * @return UriInterface
+     *
+     * @throws \InvalidArgumentException If the given URI cannot be parsed.
+     */
+    public function createUri(string $uri = ''): UriInterface
     {
-        if ($uri instanceof UriInterface) {
-            return $uri;
-        }
-
         return new Uri($uri);
     }
 
@@ -29,6 +34,7 @@ class UriFactory implements UriFactoryInterface
      *
      * @return UriInterface
      */
+    // TODO : à virer !!!!!!!!!!!!!!!
     public function createUriFromArray(array $server): UriInterface
     {
         $uri = new Uri('');
