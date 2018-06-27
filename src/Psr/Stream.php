@@ -46,46 +46,18 @@ class Stream implements StreamInterface
         ],
     ];
 
-    private function __construct()
-    {
-    }
-
-    /**
-     * @param resource $resource
-     *
-     * @return Stream
-     */
-    // TODO à virer
-    public static function createFromResource($resource): self
+    public function __construct($resource)
     {
         if (! is_resource($resource)) {
             throw new \InvalidArgumentException('Stream must be a resource');
         }
 
-        $obj = new self();
-        $obj->stream = $resource;
-        $meta = stream_get_meta_data($obj->stream);
-        $obj->seekable = $meta['seekable'];
-        $obj->readable = isset(self::$readWriteHash['read'][$meta['mode']]);
-        $obj->writable = isset(self::$readWriteHash['write'][$meta['mode']]);
-        $obj->uri = $obj->getMetadata('uri');
-
-        return $obj;
-    }
-
-    /**
-     * @param string $content
-     *
-     * @return Stream
-     */
-    // TODO à virer
-    public static function create(string $content): self
-    {
-        $resource = fopen('php://temp', 'rw+');
-        $stream = self::createFromResource($resource);
-        $stream->write($content);
-
-        return $stream;
+        $this->stream = $resource;
+        $meta = stream_get_meta_data($this->stream);
+        $this->seekable = $meta['seekable'];
+        $this->readable = isset(self::$readWriteHash['read'][$meta['mode']]);
+        $this->writable = isset(self::$readWriteHash['write'][$meta['mode']]);
+        $this->uri = $this->getMetadata('uri');
     }
 
     /**

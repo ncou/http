@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Factory;
 
+//https://github.com/http-interop/http-factory/blob/master/src/StreamFactoryInterface.php
+
 // TODO : regarder aussi ici comment c'est fait : https://github.com/akrabat/rka-content-type-renderer/blob/master/src/SimplePsrStream.php
 // https://github.com/akrabat/Slim-Http/blob/master/src/Stream.php
 
@@ -54,7 +56,7 @@ class StreamFactory implements StreamFactoryInterface
             );
         }
 
-        return Stream::createFromResource($resource);
+        return new Stream($resource);
     }
 
     public function createStream($body = null)
@@ -64,10 +66,15 @@ class StreamFactory implements StreamFactoryInterface
         }
 
         if ('resource' === gettype($body)) {
-            return Stream::createFromResource($body);
+            return new Stream($body);
         }
 
-        return Stream::create(null === $body ? '' : $body);
+        $resource = fopen('php://temp', 'rw+');
+        $stream = new Stream($resource);
+        $stream->write(null === $body ? '' : $body);
+        // TODO : il faudra surement faire un rewind() non ?????
+        return $stream;
+
     }
 
     /**
@@ -80,7 +87,7 @@ class StreamFactory implements StreamFactoryInterface
     {
         $resource = fopen($file, $mode);
 
-        return Stream::createFromResource($resource);
+        return new Stream($resource);
     }
 
     /**
@@ -91,45 +98,6 @@ class StreamFactory implements StreamFactoryInterface
      */
     public function createStreamFromResource($resource)
     {
-        return Stream::createFromResource($resource);
-    }
-
-    /**
-     * Copy the contents of a stream into another stream until the given number
-     * of bytes have been read.
-     *
-     * @author Michael Dowling and contributors to guzzlehttp/psr7
-     *
-     * @param StreamInterface $source Stream to read from
-     * @param StreamInterface $dest   Stream to write to
-     * @param int             $maxLen Maximum number of bytes to read. Pass -1
-     *                                to read the entire stream
-     *
-     * @throws \RuntimeException on error
-     */
-    public function copyToStream(StreamInterface $source, StreamInterface $dest, $maxLen = -1)
-    {
-        if ($maxLen === -1) {
-            while (! $source->eof()) {
-                if (! $dest->write($source->read(1048576))) {
-                    break;
-                }
-            }
-
-            return;
-        }
-
-        $bytes = 0;
-        while (! $source->eof()) {
-            $buf = $source->read($maxLen - $bytes);
-            if (! ($len = strlen($buf))) {
-                break;
-            }
-            $bytes += $len;
-            $dest->write($buf);
-            if ($bytes == $maxLen) {
-                break;
-            }
-        }
+        return new Stream($resource);
     }
 }

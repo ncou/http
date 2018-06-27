@@ -135,7 +135,10 @@ class UploadedFileTest extends TestCase
 
     public function testGetStreamReturnsOriginalStreamObject()
     {
-        $stream = Stream::create('');
+        $resource = fopen('php://temp', 'rw+');
+        $stream = new Stream($resource);
+        $stream->write('');
+
         $upload = new UploadedFile($stream, 0, UPLOAD_ERR_OK);
 
         $this->assertSame($stream, $upload->getStream());
@@ -152,7 +155,10 @@ class UploadedFileTest extends TestCase
 
     public function testSuccessful()
     {
-        $stream = Stream::create('Foo bar!');
+        $resource = fopen('php://temp', 'rw+');
+        $stream = new Stream($resource);
+        $stream->write('Foo bar!');
+
         $upload = new UploadedFile($stream, $stream->getSize(), UPLOAD_ERR_OK, 'filename.txt', 'text/plain');
 
         $this->assertEquals($stream->getSize(), $upload->getSize());
