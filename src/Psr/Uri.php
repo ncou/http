@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Psr;
 
-use Psr\Http\Message\UriInterface;
 use InvalidArgumentException;
+use Psr\Http\Message\UriInterface;
 
 /**
  * PSR-7 URI implementation.

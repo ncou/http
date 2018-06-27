@@ -411,7 +411,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
         }
 
         $content = $value['tmp_name'];
-        $file = fopen(sys_get_temp_dir().'/'.uniqid('uploaded_file', true), 'w+');
+        $file = fopen(sys_get_temp_dir() . '/' . uniqid('uploaded_file', true), 'w+');
         fwrite($file, $content);
         $stream = new Stream($file);
 

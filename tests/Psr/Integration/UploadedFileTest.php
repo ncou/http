@@ -12,6 +12,7 @@ class UploadedFileTest extends UploadedFileIntegrationTest
     {
         $stream = new Stream(fopen('php://temp', 'wb+'));
         $stream->write('writing to tempfile');
+
         return (new UploadedFileFactory())->createUploadedFile($stream);
     }
 }

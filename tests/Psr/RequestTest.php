@@ -3,8 +3,8 @@
 namespace Tests\Http\Psr;
 
 use Chiron\Http\Psr\Request;
-use Chiron\Http\Psr\Uri;
 use Chiron\Http\Psr\Stream;
+use Chiron\Http\Psr\Uri;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
 
