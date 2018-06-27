@@ -25,12 +25,12 @@ require_once __DIR__ . '/../../../../vendor/nyholm/psr7/src/Uri.php';
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Stream;
 use Chiron\Http\Psr\UploadedFile;
-use Psr\Http\Message\UriInterface;
 use Chiron\Http\Psr\Uri;
 use Interop\Http\Factory\ServerRequestFactoryInterface;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
+use Psr\Http\Message\UriInterface;
 
 //use Nyholm\Psr7\Factory\ServerRequestFactory as ServerRequestFactoryPsr17;
 
@@ -52,12 +52,12 @@ class ServerRequestFactory //implements ServerRequestFactoryInterface
      * of the given values is performed, and, in particular, no attempt is made to
      * determine the HTTP method or URI, which must be provided explicitly.
      *
-     * @param string $method The HTTP method associated with the request.
-     * @param UriInterface|string $uri The URI associated with the request. If
-     *     the value is a string, the factory MUST create a UriInterface
-     *     instance based on it.
-     * @param array $serverParams Array of SAPI parameters with which to seed
-     *     the generated request instance.
+     * @param string              $method       The HTTP method associated with the request.
+     * @param UriInterface|string $uri          The URI associated with the request. If
+     *                                          the value is a string, the factory MUST create a UriInterface
+     *                                          instance based on it.
+     * @param array               $serverParams Array of SAPI parameters with which to seed
+     *                                          the generated request instance.
      *
      * @return ServerRequestInterface
      */
@@ -71,9 +71,6 @@ class ServerRequestFactory //implements ServerRequestFactoryInterface
         return new ServerRequest($method, $uri);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     // TODO : à virer !!!!!!!
     public function createServerRequestFromArray(array $server): ServerRequestInterface
     {
@@ -507,6 +504,7 @@ class ServerRequestFactory //implements ServerRequestFactoryInterface
             ->withParsedBody($post)
             ->withUploadedFiles(self::normalizeFiles($files));
     }
+
     // TODO : à virer !!!!!!!!!!!!!!
     private function getMethodFromEnvironment(array $environment): string
     {
@@ -516,6 +514,7 @@ class ServerRequestFactory //implements ServerRequestFactoryInterface
 
         return $environment['REQUEST_METHOD'];
     }
+
     // TODO : à virer !!!!!!!!!!!!!!
     private function getUriFromEnvironmentWithHTTP(array $environment): \Psr\Http\Message\UriInterface
     {

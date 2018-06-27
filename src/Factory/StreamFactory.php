@@ -19,7 +19,6 @@ namespace Chiron\Http\Factory;
 
 use Chiron\Http\Psr\Stream;
 use Interop\Http\Factory\StreamFactoryInterface;
-use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -57,7 +56,7 @@ class StreamFactory //implements StreamFactoryInterface
      * The `$filename` MAY be any string supported by `fopen()`.
      *
      * @param string $filename Filename or stream URI to use as basis of stream.
-     * @param string $mode Mode with which to open the underlying filename/stream.
+     * @param string $mode     Mode with which to open the underlying filename/stream.
      *
      * @return StreamInterface
      */
