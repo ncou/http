@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Psr;
 
-use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
-use RuntimeException;
 
 /**
  * @author Michael Dowling and contributors to guzzlehttp/psr7
@@ -66,16 +64,16 @@ class UploadedFile implements UploadedFileInterface
     /**
      * @param int $error
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     private function setError($error): void
     {
         if (false === is_int($error)) {
-            throw new InvalidArgumentException('Upload file error status must be an integer');
+            throw new \InvalidArgumentException('Upload file error status must be an integer');
         }
 
         if (false === in_array($error, self::$errors)) {
-            throw new InvalidArgumentException('Invalid error status for UploadedFile');
+            throw new \InvalidArgumentException('Invalid error status for UploadedFile');
         }
 
         $this->error = $error;
@@ -84,12 +82,12 @@ class UploadedFile implements UploadedFileInterface
     /**
      * @param int $size
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     private function setSize($size): void
     {
         if (false === is_int($size)) {
-            throw new InvalidArgumentException('Upload file size must be an integer');
+            throw new \InvalidArgumentException('Upload file size must be an integer');
         }
 
         $this->size = $size;
@@ -108,7 +106,7 @@ class UploadedFile implements UploadedFileInterface
     private function setClientFilename($clientFilename): void
     {
         if (false === $this->isStringOrNull($clientFilename)) {
-            throw new InvalidArgumentException('Upload file client filename must be a string or null');
+            throw new \InvalidArgumentException('Upload file client filename must be a string or null');
         }
 
         $this->clientFilename = $clientFilename;
@@ -117,7 +115,7 @@ class UploadedFile implements UploadedFileInterface
     private function setClientMediaType($clientMediaType): void
     {
         if (false === $this->isStringOrNull($clientMediaType)) {
-            throw new InvalidArgumentException('Upload file client media type must be a string or null');
+            throw new \InvalidArgumentException('Upload file client media type must be a string or null');
         }
 
         $this->clientMediaType = $clientMediaType;
@@ -132,17 +130,17 @@ class UploadedFile implements UploadedFileInterface
     }
 
     /**
-     * @throws RuntimeException if is moved or not ok
+     * @throws \RuntimeException if is moved or not ok
      */
     private function validateActive(): void
     {
         if (false === $this->isOk()) {
             // TODO : ajouter le message d'erreur : https://github.com/zendframework/zend-diactoros/blob/master/src/UploadedFile.php#L165
-            throw new RuntimeException('Cannot retrieve stream due to upload error');
+            throw new \RuntimeException('Cannot retrieve stream due to upload error');
         }
 
         if ($this->moved) {
-            throw new RuntimeException('Cannot retrieve stream after it has already been moved');
+            throw new \RuntimeException('Cannot retrieve stream after it has already been moved');
         }
     }
 
@@ -158,7 +156,7 @@ class UploadedFile implements UploadedFileInterface
         $this->validateActive();
 
         if (false === $this->isStringNotEmpty($targetPath)) {
-            throw new InvalidArgumentException('Invalid path provided for move operation; must be a non-empty string');
+            throw new \InvalidArgumentException('Invalid path provided for move operation; must be a non-empty string');
         }
 
         $stream = $this->getStream();
@@ -172,8 +170,9 @@ class UploadedFile implements UploadedFileInterface
 
         $this->moved = true;
 
+        // TODO : regarder ce bout de code cela est bizarre car $moved vient d'etre passé à true donc on devrait jamais rentrer dans ce bout de code !!!!
         if (false === $this->moved) {
-            throw new RuntimeException(sprintf('Uploaded file could not be moved to %s', $targetPath));
+            throw new \RuntimeException(sprintf('Uploaded file could not be moved to %s', $targetPath));
         }
     }
 
@@ -213,7 +212,7 @@ class UploadedFile implements UploadedFileInterface
     {
         $handle = fopen($path, 'wb+');
         if (false === $handle) {
-            throw new RuntimeException('Unable to write to designated path');
+            throw new \RuntimeException('Unable to write to designated path');
         }
         $stream = $this->getStream();
         $stream->rewind();
