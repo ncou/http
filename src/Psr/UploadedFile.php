@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Psr;
 
-use Chiron\Http\Factory\StreamFactory;
 use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
@@ -42,10 +41,10 @@ class UploadedFile implements UploadedFileInterface
 
     /**
      * @param StreamInterface $streamOrFile
-     * @param int                             $size
-     * @param int                             $errorStatus
-     * @param string|null                     $clientFilename
-     * @param string|null                     $clientMediaType
+     * @param int             $size
+     * @param int             $errorStatus
+     * @param string|null     $clientFilename
+     * @param string|null     $clientMediaType
      */
     public function __construct(
         StreamInterface $stream,
@@ -172,7 +171,6 @@ class UploadedFile implements UploadedFileInterface
         );
 
         $this->moved = true;
-
 
         if (false === $this->moved) {
             throw new RuntimeException(sprintf('Uploaded file could not be moved to %s', $targetPath));

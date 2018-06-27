@@ -74,7 +74,6 @@ class StreamFactory implements StreamFactoryInterface
         $stream->write(null === $body ? '' : $body);
         // TODO : il faudra surement faire un rewind() non ?????
         return $stream;
-
     }
 
     /**

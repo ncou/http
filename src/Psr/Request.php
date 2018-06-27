@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Psr;
 
-use Chiron\Http\Psr\Stream;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
@@ -27,11 +26,11 @@ class Request implements RequestInterface
     private $uri;
 
     /**
-     * @param string                               $method  HTTP method
-     * @param string|UriInterface                  $uri     URI
-     * @param array                                $headers Request headers
+     * @param string               $method  HTTP method
+     * @param string|UriInterface  $uri     URI
+     * @param array                $headers Request headers
      * @param StreamInterface|null $body    Request body
-     * @param string                               $version Protocol version
+     * @param string               $version Protocol version
      */
     public function __construct(
         $method,

@@ -5,9 +5,9 @@ namespace Tests\Http\Psr;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Factory\UriFactory;
 use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Stream;
 use Chiron\Http\Psr\UploadedFile;
 use Chiron\Http\Psr\Uri;
-use Chiron\Http\Psr\Stream;
 use PHPUnit\Framework\TestCase;
 
 /**
