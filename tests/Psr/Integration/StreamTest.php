@@ -7,8 +7,8 @@ use Http\Psr7Test\StreamIntegrationTest;
 
 class StreamTest extends StreamIntegrationTest
 {
-    public function createStream($data)
+    public function createStream($content)
     {
-        return (new StreamFactory())->createStream($data);
+        return (new StreamFactory())->createStream($content);
     }
 }

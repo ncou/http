@@ -27,22 +27,18 @@ class Request implements RequestInterface
 
     /**
      * @param string               $method  HTTP method
-     * @param string|UriInterface  $uri     URI
+     * @param UriInterface  $uri     URI
      * @param array                $headers Request headers
      * @param StreamInterface|null $body    Request body
      * @param string               $version Protocol version
      */
     public function __construct(
         $method,
-        $uri,
+        UriInterface $uri,
         array $headers = [],
         StreamInterface $body = null,
         $version = '1.1'
     ) {
-        if (! ($uri instanceof UriInterface)) {
-            $uri = new Uri($uri);
-        }
-
         $this->method = $method;
         $this->uri = $uri;
         $this->setHeaders($headers);

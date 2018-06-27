@@ -35,7 +35,7 @@ class ServerRequest extends Request implements ServerRequestInterface
 
     /**
      * @param string               $method       HTTP method
-     * @param string|UriInterface  $uri          URI
+     * @param UriInterface  $uri          URI
      * @param array                $headers      Request headers
      * @param StreamInterface|null $body         Request body
      * @param string               $version      Protocol version
@@ -43,7 +43,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      */
     public function __construct(
         $method,
-        $uri,
+        UriInterface $uri,
         array $headers = [],
         StreamInterface $body = null,
         $version = '1.1',

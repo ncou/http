@@ -8,19 +8,16 @@ use Chiron\Http\Psr\Uri;
 use Interop\Http\Factory\UriFactoryInterface;
 use Psr\Http\Message\UriInterface;
 
-/**
- * @author Tobias Nyholm <tobias.nyholm@gmail.com>
- */
-class UriFactory implements UriFactoryInterface
+class UriFactory //implements UriFactoryInterface
 {
     /**
      * Create a new URI.
      *
      * @param string $uri
      *
-     * @throws \InvalidArgumentException If the given URI cannot be parsed.
-     *
      * @return UriInterface
+     *
+     * @throws \InvalidArgumentException If the given URI cannot be parsed.
      */
     public function createUri(string $uri = ''): UriInterface
     {

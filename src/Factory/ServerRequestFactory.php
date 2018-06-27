@@ -25,6 +25,7 @@ require_once __DIR__ . '/../../../../vendor/nyholm/psr7/src/Uri.php';
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Stream;
 use Chiron\Http\Psr\UploadedFile;
+use Psr\Http\Message\UriInterface;
 use Chiron\Http\Psr\Uri;
 use Interop\Http\Factory\ServerRequestFactoryInterface;
 use InvalidArgumentException;
@@ -35,7 +36,7 @@ use Psr\Http\Message\UploadedFileInterface;
 
 // basé sur : https://github.com/viserio/http-factory/blob/master/ServerRequestFactory.php
 
-class ServerRequestFactory implements ServerRequestFactoryInterface
+class ServerRequestFactory //implements ServerRequestFactoryInterface
 {
     /**
      * Function to use to get apache request headers; present only to simplify mocking.
@@ -45,17 +46,35 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
     private static $apacheRequestHeaders = 'apache_request_headers';
 
     /**
-     * {@inheritdoc}
+     * Create a new server request.
+     *
+     * Note that server-params are taken precisely as given - no parsing/processing
+     * of the given values is performed, and, in particular, no attempt is made to
+     * determine the HTTP method or URI, which must be provided explicitly.
+     *
+     * @param string $method The HTTP method associated with the request.
+     * @param UriInterface|string $uri The URI associated with the request. If
+     *     the value is a string, the factory MUST create a UriInterface
+     *     instance based on it.
+     * @param array $serverParams Array of SAPI parameters with which to seed
+     *     the generated request instance.
+     *
+     * @return ServerRequestInterface
      */
-    public function createServerRequest($method, $uri): ServerRequestInterface
+    // TODO : utiliser le array $serverParams[] !!!!!!!!!!!!!!!!!!!!!!!!!!
+    public function createServerRequest(string $method, $uri, array $serverParams = []): ServerRequestInterface
     {
-        //return $this->buildServerRequest($method, $uri);
+        if (! $uri instanceof UriInterface) {
+            $uri = new Uri($uri);
+        }
+
         return new ServerRequest($method, $uri);
     }
 
     /**
      * {@inheritdoc}
      */
+    // TODO : à virer !!!!!!!
     public function createServerRequestFromArray(array $server): ServerRequestInterface
     {
         // Check if request is valid, need URI and method set at least.
@@ -143,7 +162,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
         */
 
         //$body = 'php://input'; //new LazyOpenStream('php://input', 'r+');
-        $body = StreamFactory::createFromStringOrResource('php://input', 'r+');
+        $body = new Stream(fopen('php://input', 'r+'));
 
         $serverRequest = new ServerRequest($method, $uri, $headers, $body, $protocol, $server);
 
@@ -374,6 +393,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
      *
      * @return array
      */
+    // TODO : vérifier pourquoi cette méthode est en public il faudrait plutot du private !!!
     public function normalizeFiles(array $files): array
     {
         $normalized = [];
@@ -465,6 +485,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
      *
      * @return ServerRequestInterface
      */
+    // TODO : à virer !!!!!!!!!!!!!!
     public function createServerRequestFromArrays(
         array $server,
         array $headers,
@@ -486,7 +507,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
             ->withParsedBody($post)
             ->withUploadedFiles(self::normalizeFiles($files));
     }
-
+    // TODO : à virer !!!!!!!!!!!!!!
     private function getMethodFromEnvironment(array $environment): string
     {
         if (false === isset($environment['REQUEST_METHOD'])) {
@@ -495,7 +516,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
 
         return $environment['REQUEST_METHOD'];
     }
-
+    // TODO : à virer !!!!!!!!!!!!!!
     private function getUriFromEnvironmentWithHTTP(array $environment): \Psr\Http\Message\UriInterface
     {
         $uri = (new UriFactory())->createUriFromArray($environment);

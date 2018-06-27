@@ -25,77 +25,59 @@ use Psr\Http\Message\StreamInterface;
 /**
  * Implementation of PSR HTTP streams.
  */
-class StreamFactory implements StreamFactoryInterface
+class StreamFactory //implements StreamFactoryInterface
 {
     /**
-     * @param string|resource $stream
-     * @param string          $mode   Mode with which to open stream
+     * Create a new stream from a string.
      *
-     * @throws InvalidArgumentException
+     * The stream SHOULD be created with a temporary resource.
+     *
+     * @param string $content String content with which to populate the stream.
+     *
+     * @return StreamInterface
      */
-    public static function createFromStringOrResource($stream, $mode = 'r')
+    public function createStream(string $content = ''): StreamInterface
     {
-        $error = null;
-        $resource = $stream;
-
-        if (is_string($stream)) {
-            set_error_handler(function ($e) use (&$error) {
-                $error = $e;
-            }, E_WARNING);
-            $resource = fopen($stream, $mode);
-            restore_error_handler();
-        }
-
-        if ($error) {
-            throw new InvalidArgumentException('Invalid stream reference provided');
-        }
-
-        if (! is_resource($resource) || 'stream' !== get_resource_type($resource)) {
-            throw new InvalidArgumentException(
-                'Invalid stream provided; must be a string stream identifier or stream resource'
-            );
-        }
-
-        return new Stream($resource);
-    }
-
-    public function createStream($body = null)
-    {
-        if ($body instanceof StreamInterface) {
-            return $body;
-        }
-
-        if ('resource' === gettype($body)) {
-            return new Stream($body);
-        }
-
         $resource = fopen('php://temp', 'rw+');
         $stream = new Stream($resource);
-        $stream->write(null === $body ? '' : $body);
-        // TODO : il faudra surement faire un rewind() non ?????
+        if (! empty($content)) {
+            $stream->write($content);
+            $stream->rewind();
+        }
+
         return $stream;
     }
 
     /**
-     * {@inheritdoc}
+     * Create a stream from an existing file.
      *
-     * @internal This function does not fall under our BC promise. We will adapt to changes to the http-interop/http-factory.
-     * This class will be finalized when the PSR-17 is accepted.
+     * The file MUST be opened using the given mode, which may be any mode
+     * supported by the `fopen` function.
+     *
+     * The `$filename` MAY be any string supported by `fopen()`.
+     *
+     * @param string $filename Filename or stream URI to use as basis of stream.
+     * @param string $mode Mode with which to open the underlying filename/stream.
+     *
+     * @return StreamInterface
      */
-    public function createStreamFromFile($file, $mode = 'r')
+    public function createStreamFromFile(string $filename, string $mode = 'r'): StreamInterface
     {
-        $resource = fopen($file, $mode);
+        $resource = fopen($filename, $mode);
 
         return new Stream($resource);
     }
 
     /**
-     * {@inheritdoc}
+     * Create a new stream from an existing resource.
      *
-     * @internal This function does not fall under our BC promise. We will adapt to changes to the http-interop/http-factory.
-     * This class will be finalized when the PSR-17 is accepted.
+     * The stream MUST be readable and may be writable.
+     *
+     * @param resource $resource PHP resource to use as basis of stream.
+     *
+     * @return StreamInterface
      */
-    public function createStreamFromResource($resource)
+    public function createStreamFromResource($resource): StreamInterface
     {
         return new Stream($resource);
     }
