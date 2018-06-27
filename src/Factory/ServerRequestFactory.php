@@ -193,7 +193,7 @@ class ServerRequestFactory //implements ServerRequestFactoryInterface
      *
      * @return \Psr\Http\Message\UriInterface
      */
-    public function marshalUriFromServer(array $server)
+    private function marshalUriFromServer(array $server)
     {
         $uri = new Uri('');
 
@@ -390,8 +390,7 @@ class ServerRequestFactory //implements ServerRequestFactoryInterface
      *
      * @return array
      */
-    // TODO : vérifier pourquoi cette méthode est en public il faudrait plutot du private !!!
-    public function normalizeFiles(array $files): array
+    private function normalizeFiles(array $files): array
     {
         $normalized = [];
         foreach ($files as $key => $value) {
@@ -466,63 +465,5 @@ class ServerRequestFactory //implements ServerRequestFactoryInterface
         }
 
         return $normalizedFiles;
-    }
-
-    /**
-     * Create a new server request from a set of arrays.
-     *
-     * @param array $server  Typically $_SERVER or similar structure.
-     * @param array $headers Typically the output of getallheaders() or similar structure.
-     * @param array $cookie  Typically $_COOKIE or similar structure.
-     * @param array $get     Typically $_GET or similar structure.
-     * @param array $post    Typically $_POST or similar structure.
-     * @param array $files   Typically $_FILES or similar structure.
-     *
-     * @throws InvalidArgumentException If no valid method or URI can be determined.
-     *
-     * @return ServerRequestInterface
-     */
-    // TODO : à virer !!!!!!!!!!!!!!
-    public function createServerRequestFromArrays(
-        array $server,
-        array $headers,
-        array $cookie,
-        array $get,
-        array $post,
-        array $files
-    ): ServerRequestInterface {
-        $method = $this->getMethodFromEnvironment($server);
-        $uri = $this->getUriFromEnvironmentWithHTTP($server);
-
-        $protocol = isset($server['SERVER_PROTOCOL']) ? str_replace('HTTP/', '', $server['SERVER_PROTOCOL']) : '1.1';
-
-        $serverRequest = new ServerRequest($method, $uri, $headers, null, $protocol, $server);
-
-        return $serverRequest
-            ->withCookieParams($cookie)
-            ->withQueryParams($get)
-            ->withParsedBody($post)
-            ->withUploadedFiles(self::normalizeFiles($files));
-    }
-
-    // TODO : à virer !!!!!!!!!!!!!!
-    private function getMethodFromEnvironment(array $environment): string
-    {
-        if (false === isset($environment['REQUEST_METHOD'])) {
-            throw new InvalidArgumentException('Cannot determine HTTP method');
-        }
-
-        return $environment['REQUEST_METHOD'];
-    }
-
-    // TODO : à virer !!!!!!!!!!!!!!
-    private function getUriFromEnvironmentWithHTTP(array $environment): \Psr\Http\Message\UriInterface
-    {
-        $uri = (new UriFactory())->createUriFromArray($environment);
-        if ('' === $uri->getScheme()) {
-            $uri = $uri->withScheme('http');
-        }
-
-        return $uri;
     }
 }
