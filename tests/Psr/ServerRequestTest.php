@@ -7,6 +7,7 @@ use Chiron\Http\Factory\UriFactory;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\UploadedFile;
 use Chiron\Http\Psr\Uri;
+use Chiron\Http\Psr\Stream;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -29,7 +30,7 @@ class ServerRequestTest extends TestCase
                 ],
                 [
                     'file' => new UploadedFile(
-                        '/tmp/php/php1h4j1o',
+                        new Stream(fopen('php://temp', 'wb+')),
                         123,
                         UPLOAD_ERR_OK,
                         'MyFile.txt',
@@ -49,7 +50,7 @@ class ServerRequestTest extends TestCase
                 ],
                 [
                     'image_file' => new UploadedFile(
-                        '',
+                        new Stream(fopen('php://temp', 'wb+')),
                         0,
                         UPLOAD_ERR_NO_FILE,
                         '',
@@ -60,7 +61,7 @@ class ServerRequestTest extends TestCase
             'Already Converted' => [
                 [
                     'file' => new UploadedFile(
-                        '/tmp/php/php1h4j1o',
+                        new Stream(fopen('php://temp', 'wb+')),
                         123,
                         UPLOAD_ERR_OK,
                         'MyFile.txt',
@@ -69,7 +70,7 @@ class ServerRequestTest extends TestCase
                 ],
                 [
                     'file' => new UploadedFile(
-                        '/tmp/php/php1h4j1o',
+                        new Stream(fopen('php://temp', 'wb+')),
                         123,
                         UPLOAD_ERR_OK,
                         'MyFile.txt',
@@ -81,14 +82,14 @@ class ServerRequestTest extends TestCase
                 [
                     'file' => [
                         new UploadedFile(
-                            '/tmp/php/php1h4j1o',
+                            new Stream(fopen('php://temp', 'wb+')),
                             123,
                             UPLOAD_ERR_OK,
                             'MyFile.txt',
                             'text/plain'
                         ),
                         new UploadedFile(
-                            '',
+                            new Stream(fopen('php://temp', 'wb+')),
                             0,
                             UPLOAD_ERR_NO_FILE,
                             '',
@@ -99,14 +100,14 @@ class ServerRequestTest extends TestCase
                 [
                     'file' => [
                         new UploadedFile(
-                            '/tmp/php/php1h4j1o',
+                            new Stream(fopen('php://temp', 'wb+')),
                             123,
                             UPLOAD_ERR_OK,
                             'MyFile.txt',
                             'text/plain'
                         ),
                         new UploadedFile(
-                            '',
+                            new Stream(fopen('php://temp', 'wb+')),
                             0,
                             UPLOAD_ERR_NO_FILE,
                             '',
@@ -134,14 +135,14 @@ class ServerRequestTest extends TestCase
                 ],
                 [
                     'text_file' => new UploadedFile(
-                        '/tmp/php/php1h4j1o',
+                        new Stream(fopen('php://temp', 'wb+')),
                         123,
                         UPLOAD_ERR_OK,
                         'MyFile.txt',
                         'text/plain'
                     ),
                     'image_file' => new UploadedFile(
-                        '',
+                        new Stream(fopen('php://temp', 'wb+')),
                         0,
                         UPLOAD_ERR_NO_FILE,
                         '',
@@ -214,14 +215,14 @@ class ServerRequestTest extends TestCase
                 [
                     'file' => [
                         0 => new UploadedFile(
-                            '/tmp/php/hp9hskjhf',
+                            new Stream(fopen('php://temp', 'wb+')),
                             123,
                             UPLOAD_ERR_OK,
                             'MyFile.txt',
                             'text/plain'
                         ),
                         1 => new UploadedFile(
-                            '/tmp/php/php1h4j1o',
+                            new Stream(fopen('php://temp', 'wb+')),
                             7349,
                             UPLOAD_ERR_OK,
                             'Image.png',
@@ -230,7 +231,7 @@ class ServerRequestTest extends TestCase
                     ],
                     'nested' => [
                         'other' => new UploadedFile(
-                            '/tmp/php/hp9hskjhf',
+                            new Stream(fopen('php://temp', 'wb+')),
                             421,
                             UPLOAD_ERR_OK,
                             'Flag.txt',
@@ -238,14 +239,14 @@ class ServerRequestTest extends TestCase
                         ),
                         'test' => [
                             0 => new UploadedFile(
-                                '/tmp/php/asifu2gp3',
+                                new Stream(fopen('php://temp', 'wb+')),
                                 32,
                                 UPLOAD_ERR_OK,
                                 'Stuff.txt',
                                 'text/plain'
                             ),
                             1 => new UploadedFile(
-                                '',
+                                new Stream(fopen('php://temp', 'wb+')),
                                 0,
                                 UPLOAD_ERR_NO_FILE,
                                 '',
@@ -419,9 +420,11 @@ class ServerRequestTest extends TestCase
             $server->getUri()
         );
 
+        $stream = new Stream(fopen('php://temp', 'r'));
+
         $expectedFiles = [
             'file' => new UploadedFile(
-                '/tmp/php/php1h4j1o',
+                $stream,
                 123,
                 UPLOAD_ERR_OK,
                 'MyFile.txt',
@@ -437,7 +440,7 @@ class ServerRequestTest extends TestCase
         $request1 = new ServerRequest('GET', '/');
 
         $files = [
-            'file' => new UploadedFile('test', 123, UPLOAD_ERR_OK),
+            'file' => new UploadedFile(new Stream(fopen('php://temp', 'r')), 123, UPLOAD_ERR_OK),
         ];
 
         $request2 = $request1->withUploadedFiles($files);

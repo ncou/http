@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Psr;
 
-use Chiron\Http\Factory\StreamFactory;
+use Chiron\Http\Psr\Stream;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
@@ -87,22 +87,20 @@ class Response implements ResponseInterface
     /**
      * @param int                                  $status  Status code
      * @param array                                $headers Response headers
-     * @param string|null|resource|StreamInterface $body    Response body
+     * @param StreamInterface|null $body    Response body
      * @param string                               $version Protocol version
      * @param string|null                          $reason  Reason phrase (when empty a default will be used based on the status code)
      */
     public function __construct(
         int $status = 200,
         array $headers = [],
-        $body = null,
+        StreamInterface $body = null,
         string $version = '1.1',
         $reason = null
     ) {
         $this->statusCode = (int) $status;
 
-        if ('' !== $body && null !== $body) {
-            $this->stream = (new StreamFactory())->createStream($body);
-        }
+        $this->stream = $body ?? new Stream(fopen('php://temp', 'r+'));
 
         $this->setHeaders($headers);
         if (null === $reason && isset(self::$phrases[$this->statusCode])) {
@@ -1998,10 +1996,12 @@ class Response implements ResponseInterface
         }
     }
 
+/*
     public function withoutBody()
     {
         return $this->withBody(StreamFactory::createFromStringOrResource('php://temp', 'rw+'));
     }
+*/
 
     //*******************************************************************
     //https://github.com/cakephp/cakephp/blob/master/src/Http/Response.php#L1300

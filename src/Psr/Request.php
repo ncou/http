@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Psr;
 
-use Chiron\Http\Factory\StreamFactory;
-use InvalidArgumentException;
+use Chiron\Http\Psr\Stream;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
@@ -31,14 +30,14 @@ class Request implements RequestInterface
      * @param string                               $method  HTTP method
      * @param string|UriInterface                  $uri     URI
      * @param array                                $headers Request headers
-     * @param string|null|resource|StreamInterface $body    Request body
+     * @param StreamInterface|null $body    Request body
      * @param string                               $version Protocol version
      */
     public function __construct(
         $method,
         $uri,
         array $headers = [],
-        $body = null,
+        StreamInterface $body = null,
         $version = '1.1'
     ) {
         if (! ($uri instanceof UriInterface)) {
@@ -54,9 +53,7 @@ class Request implements RequestInterface
             $this->updateHostFromUri();
         }
 
-        if ('' !== $body && null !== $body) {
-            $this->stream = (new StreamFactory())->createStream($body);
-        }
+        $this->stream = $body ?? new Stream(fopen('php://temp', 'r+'));
     }
 
     public function getRequestTarget(): string
@@ -79,7 +76,7 @@ class Request implements RequestInterface
     public function withRequestTarget($requestTarget): self
     {
         if (preg_match('#\s#', $requestTarget)) {
-            throw new InvalidArgumentException('Invalid request target provided; cannot contain whitespace');
+            throw new \InvalidArgumentException('Invalid request target provided; cannot contain whitespace');
         }
 
         $new = clone $this;

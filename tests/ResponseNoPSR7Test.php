@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Http;
 
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\Stream;
 use PHPUnit\Framework\TestCase;
 /*
 use Psr\Http\Message\ResponseInterface;
@@ -13,7 +14,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 use Psr\Http\Message\StreamInterface;
 
-class ResponseTest extends TestCase
+class ResponseNoPSR7Test extends TestCase
 {
     protected function setUp()
     {
@@ -200,15 +201,15 @@ class ResponseTest extends TestCase
         $this->assertSame(null, $r->detectFormat());
 
         // detect JSON
-        $r = $r->withoutBody()->write('{"test":"ok"}');
+        $r = $r->withBody(new Stream(fopen('php://temp', 'wb+')))->write('{"test":"ok"}');
         $this->assertSame('JSON', $r->detectFormat());
 
         // detect XML
-        $r = $r->withoutBody()->write('<test>ok</test>');
+        $r = $r->withBody(new Stream(fopen('php://temp', 'wb+')))->write('<test>ok</test>');
         $this->assertSame('XML', $r->detectFormat());
 
         // detect URLENCODED
-        $r = $r->withoutBody()->write('data=test&value=ok');
+        $r = $r->withBody(new Stream(fopen('php://temp', 'wb+')))->write('data=test&value=ok');
         $this->assertSame('URLENCODED', $r->detectFormat());
     }
 

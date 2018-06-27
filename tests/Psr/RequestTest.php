@@ -4,6 +4,7 @@ namespace Tests\Http\Psr;
 
 use Chiron\Http\Psr\Request;
 use Chiron\Http\Psr\Uri;
+use Chiron\Http\Psr\Stream;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
 
@@ -35,7 +36,9 @@ class RequestTest extends TestCase
 
     public function testCanConstructWithBody()
     {
-        $r = new Request('GET', '/', [], 'baz');
+        $stream = new Stream(fopen('php://temp', 'wb+'));
+        $stream->write('baz');
+        $r = new Request('GET', '/', [], $stream);
         $this->assertInstanceOf(StreamInterface::class, $r->getBody());
         $this->assertEquals('baz', (string) $r->getBody());
     }
@@ -49,7 +52,9 @@ class RequestTest extends TestCase
 
     public function testFalseyBody()
     {
-        $r = new Request('GET', '/', [], '0');
+        $stream = new Stream(fopen('php://temp', 'wb+'));
+        $stream->write('0');
+        $r = new Request('GET', '/', [], $stream);
         $this->assertInstanceOf(StreamInterface::class, $r->getBody());
         $this->assertSame('0', (string) $r->getBody());
     }

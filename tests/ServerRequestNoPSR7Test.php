@@ -7,7 +7,7 @@ namespace Tests\Http;
 use Chiron\Http\Factory\ServerRequestFactory;
 use PHPUnit\Framework\TestCase;
 
-class ServerRequestTest extends TestCase
+class ServerRequestNoPSR7Test extends TestCase
 {
     protected function setUp()
     {

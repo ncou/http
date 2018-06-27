@@ -23,6 +23,7 @@ require_once __DIR__ . '/../../../../vendor/nyholm/psr7/src/Uri.php';
 //namespace Viserio\Component\HttpFactory;
 
 use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Stream;
 use Chiron\Http\Psr\UploadedFile;
 use Chiron\Http\Psr\Uri;
 use Interop\Http\Factory\ServerRequestFactoryInterface;
@@ -409,8 +410,13 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
             return $this->normalizeNestedFileSpec($value);
         }
 
+        $content = $value['tmp_name'];
+        $file = fopen(sys_get_temp_dir().'/'.uniqid('uploaded_file', true), 'w+');
+        fwrite($file, $content);
+        $stream = new Stream($file);
+
         return new UploadedFile(
-            $value['tmp_name'],
+            $stream,
             (int) $value['size'],
             (int) $value['error'],
             $value['name'],

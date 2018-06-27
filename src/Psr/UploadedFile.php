@@ -31,9 +31,6 @@ class UploadedFile implements UploadedFileInterface
     /** @var int */
     private $error;
 
-    /** @var null|string */
-    private $file;
-
     /** @var bool */
     private $moved = false;
 
@@ -44,14 +41,14 @@ class UploadedFile implements UploadedFileInterface
     private $stream;
 
     /**
-     * @param StreamInterface|string|resource $streamOrFile
+     * @param StreamInterface $streamOrFile
      * @param int                             $size
      * @param int                             $errorStatus
      * @param string|null                     $clientFilename
      * @param string|null                     $clientMediaType
      */
     public function __construct(
-        $streamOrFile,
+        StreamInterface $stream,
         $size,
         $errorStatus,
         $clientFilename = null,
@@ -63,27 +60,7 @@ class UploadedFile implements UploadedFileInterface
         $this->setClientMediaType($clientMediaType);
 
         if ($this->isOk()) {
-            $this->setStreamOrFile($streamOrFile);
-        }
-    }
-
-    /**
-     * Depending on the value set file or stream variable.
-     *
-     * @param mixed $streamOrFile
-     *
-     * @throws InvalidArgumentException
-     */
-    private function setStreamOrFile($streamOrFile): void
-    {
-        if (is_string($streamOrFile)) {
-            $this->file = $streamOrFile;
-        } elseif (is_resource($streamOrFile)) {
-            $this->stream = new Stream($streamOrFile);
-        } elseif ($streamOrFile instanceof StreamInterface) {
-            $this->stream = $streamOrFile;
-        } else {
-            throw new InvalidArgumentException('Invalid stream or file provided for UploadedFile');
+            $this->stream = $stream;
         }
     }
 
@@ -174,13 +151,7 @@ class UploadedFile implements UploadedFileInterface
     {
         $this->validateActive();
 
-        if ($this->stream instanceof StreamInterface) {
-            return $this->stream;
-        }
-
-        $resource = fopen($this->file, 'r');
-
-        return new Stream($resource);
+        return $this->stream;
     }
 
     public function moveTo($targetPath): void
@@ -191,22 +162,17 @@ class UploadedFile implements UploadedFileInterface
             throw new InvalidArgumentException('Invalid path provided for move operation; must be a non-empty string');
         }
 
-        if (null !== $this->file) {
-            $this->moved = 'cli' == php_sapi_name()
-                ? rename($this->file, $targetPath)
-                : move_uploaded_file($this->file, $targetPath);
-        } else {
-            $stream = $this->getStream();
-            if ($stream->isSeekable()) {
-                $stream->rewind();
-            }
-            $this->copyToStream(
-                $stream,
-                new Stream(fopen($targetPath, 'w'))
-            );
-
-            $this->moved = true;
+        $stream = $this->getStream();
+        if ($stream->isSeekable()) {
+            $stream->rewind();
         }
+        $this->copyToStream(
+            $stream,
+            new Stream(fopen($targetPath, 'w'))
+        );
+
+        $this->moved = true;
+
 
         if (false === $this->moved) {
             throw new RuntimeException(sprintf('Uploaded file could not be moved to %s', $targetPath));

@@ -37,7 +37,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      * @param string                               $method       HTTP method
      * @param string|UriInterface                  $uri          URI
      * @param array                                $headers      Request headers
-     * @param string|null|resource|StreamInterface $body         Request body
+     * @param StreamInterface|null $body         Request body
      * @param string                               $version      Protocol version
      * @param array                                $serverParams Typically the $_SERVER superglobal
      */
@@ -45,7 +45,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         $method,
         $uri,
         array $headers = [],
-        $body = null,
+        StreamInterface$body = null,
         $version = '1.1',
         array $serverParams = []
     ) {

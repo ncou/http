@@ -4,6 +4,7 @@ namespace Tests\Http\Psr;
 
 use Chiron\Http\Factory\StreamFactory;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\Stream;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
 
@@ -71,7 +72,9 @@ class ResponseTest extends TestCase
 
     public function testCanConstructWithBody()
     {
-        $r = new Response(200, [], 'baz');
+        $stream = new Stream(fopen('php://temp', 'wb+'));
+        $stream->write('baz');
+        $r = new Response(200, [], $stream);
         $this->assertInstanceOf(StreamInterface::class, $r->getBody());
         $this->assertSame('baz', (string) $r->getBody());
     }
@@ -85,7 +88,9 @@ class ResponseTest extends TestCase
 
     public function testFalseyBody()
     {
-        $r = new Response(200, [], '0');
+        $stream = new Stream(fopen('php://temp', 'wb+'));
+        $stream->write('0');
+        $r = new Response(200, [], $stream);
         $this->assertInstanceOf(StreamInterface::class, $r->getBody());
         $this->assertSame('0', (string) $r->getBody());
     }

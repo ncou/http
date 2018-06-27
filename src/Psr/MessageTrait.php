@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Psr;
 
-use Chiron\Http\Factory\StreamFactory;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -156,11 +155,6 @@ trait MessageTrait
 
     public function getBody(): StreamInterface
     {
-        // TODO : vérifier si on a vraiment besoin d'initialiser un stream si il est null !!!!
-        if (! $this->stream) {
-            $this->stream = (new StreamFactory())->createStream('');
-        }
-
         return $this->stream;
     }
 
