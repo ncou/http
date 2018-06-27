@@ -28,30 +28,6 @@ class UploadedFileTest extends TestCase
         }
     }
 
-    public function invalidStreams()
-    {
-        return [
-            'null'   => [null],
-            'true'   => [true],
-            'false'  => [false],
-            'int'    => [1],
-            'float'  => [1.1],
-            'array'  => [['filename']],
-            'object' => [(object) ['filename']],
-        ];
-    }
-
-    /**
-     * @dataProvider invalidStreams
-     */
-    public function testRaisesExceptionOnInvalidStreamOrFile($streamOrFile)
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid stream or file provided for UploadedFile');
-
-        new UploadedFile($streamOrFile, 0, UPLOAD_ERR_OK);
-    }
-
     public function invalidSizes()
     {
         return [

@@ -39,10 +39,7 @@ class StreamFactory //implements StreamFactoryInterface
     {
         $resource = fopen('php://temp', 'rw+');
         $stream = new Stream($resource);
-        if (! empty($content)) {
-            $stream->write($content);
-            $stream->rewind();
-        }
+        $stream->write($content);
 
         return $stream;
     }
