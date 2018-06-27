@@ -35,7 +35,7 @@ class ServerRequest extends Request implements ServerRequestInterface
 
     /**
      * @param string               $method       HTTP method
-     * @param UriInterface  $uri          URI
+     * @param UriInterface         $uri          URI
      * @param array                $headers      Request headers
      * @param StreamInterface|null $body         Request body
      * @param string               $version      Protocol version
