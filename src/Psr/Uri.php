@@ -262,7 +262,7 @@ class Uri implements UriInterface
     private static function createUriString(string $scheme, string $authority, string $path, string $query, string $fragment): string
     {
         $uri = '';
-        if ('' != $scheme) {
+        if ($scheme !== '') {
             $uri .= $scheme . ':';
         }
 
@@ -271,7 +271,7 @@ class Uri implements UriInterface
         }
 
         if ($path !== '') {
-            if ('/' !== $path[0]) {
+            if ( $path[0] !== '/') {
                 if ('' != $authority) {
                     // If the path is rootless and an authority is present, the path MUST be prefixed by "/"
                     $path = '/' . $path;
