@@ -171,9 +171,10 @@ class UploadedFile implements UploadedFileInterface
         $this->moved = true;
 
         // TODO : regarder ce bout de code cela est bizarre car $moved vient d'etre passé à true donc on devrait jamais rentrer dans ce bout de code !!!!
+        /*
         if (false === $this->moved) {
             throw new \RuntimeException(sprintf('Uploaded file could not be moved to %s', $targetPath));
-        }
+        }*/
     }
 
     public function getSize(): ?int

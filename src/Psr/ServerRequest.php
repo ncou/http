@@ -397,6 +397,24 @@ class ServerRequest extends Request implements ServerRequestInterface
         }
     }
 
+    public function getMediaType2()
+    {
+        $type = strtolower($request->getHeaderLine('Content-Type'));
+        list ($type) = explode(';', $type);
+        return $type;
+    }
+
+    private function getMediaType3(ServerRequestInterface $request)
+    {
+        $contentType = $request->hasHeader('Content-Type') ? $request->getHeaderLine('Content-Type') : null;
+
+        if ($contentType) {
+            $parts = explode(';', $request->getHeaderLine('Content-Type'));
+
+            return strtolower(trim(array_shift($parts)));
+        }
+    }
+
     /**
      * Get request media type params, if known.
      *

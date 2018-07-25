@@ -73,23 +73,7 @@ trait MessageTrait
 
     public function withHeader($header, $value): self
     {
-        if (! is_array($value)) {
-            $value = [$value];
-        } elseif (empty($value)) {
-            throw new \InvalidArgumentException('Header values must be strings');
-        }
-
-        if (! is_string($header) || empty($header)) {
-            throw new \InvalidArgumentException('Header name must be strings');
-        }
-
-        foreach ($value as $v) {
-            if (! is_string($v)) {
-                throw new \InvalidArgumentException('Header values must be strings');
-            }
-        }
-
-        $value = $this->trimHeaderValues($value);
+        $value = $this->validateAndTrimHeader($header, $value);
         $normalized = strtolower($header);
 
         $new = clone $this;
@@ -104,35 +88,12 @@ trait MessageTrait
 
     public function withAddedHeader($header, $value): self
     {
-        if (! is_array($value)) {
-            $value = [$value];
-        } elseif (! empty($value)) {
-            $value = array_values($value);
-        } else {
-            throw new \InvalidArgumentException('Header values must be strings');
-        }
-
         if (! is_string($header) || empty($header)) {
-            throw new \InvalidArgumentException('Header name must be strings');
+            throw new \InvalidArgumentException('Header name must be a string');
         }
-
-        foreach ($value as $v) {
-            if (! is_string($v)) {
-                throw new \InvalidArgumentException('Header values must be strings');
-            }
-        }
-
-        $value = $this->trimHeaderValues($value);
-        $normalized = strtolower($header);
 
         $new = clone $this;
-        if (isset($new->headerNames[$normalized])) {
-            $header = $this->headerNames[$normalized];
-            $new->headers[$header] = array_merge($this->headers[$header], $value);
-        } else {
-            $new->headerNames[$normalized] = $header;
-            $new->headers[$header] = $value;
-        }
+        $new->setHeaders([$header => $value]);
 
         return $new;
     }
@@ -172,13 +133,8 @@ trait MessageTrait
 
     private function setHeaders(array $headers): void
     {
-        $this->headerNames = $this->headers = [];
         foreach ($headers as $header => $value) {
-            if (! is_array($value)) {
-                $value = [$value];
-            }
-
-            $value = $this->trimHeaderValues($value);
+            $value = $this->validateAndTrimHeader($header, $value);
             $normalized = strtolower($header);
             if (isset($this->headerNames[$normalized])) {
                 $header = $this->headerNames[$normalized];
@@ -191,21 +147,39 @@ trait MessageTrait
     }
 
     /**
-     * Trims whitespace from the header values.
+     * Make sure header has a non-empty string name and a sting value.
      *
-     * Spaces and tabs ought to be excluded by parsers when extracting the field value from a header field.
+     * Trims whitespace from the header values. Spaces and tabs ought to be
+     * excluded by parsers when extracting the field value from a header field.
      *
      * header-field = field-name ":" OWS field-value OWS
      * OWS          = *( SP / HTAB )
      *
-     * @param string[] $values Header values
-     *
-     * @return string[] Trimmed header values
-     *
      * @see https://tools.ietf.org/html/rfc7230#section-3.2.4
      */
-    private function trimHeaderValues(array $values): array
+    private function validateAndTrimHeader($header, $values): array
     {
+        if (!is_array($values)) {
+            $values = [$values];
+        } elseif (empty($values)) {
+            throw new \InvalidArgumentException('Header values must be strings, empty array given.');
+        } else {
+            // Non empty array
+            $values = array_values($values);
+        }
+
+        if (!is_string($header) || empty($header)) {
+            throw new \InvalidArgumentException('Header name must be a string');
+        }
+
+        foreach ($values as &$v) {
+            if (is_numeric($v)) {
+                $v = (string) $v;
+            } elseif (!is_string($v)) {
+                throw new \InvalidArgumentException('Header values must be strings');
+            }
+        }
+
         return array_map(function (string $value) {
             return trim($value, " \t");
         }, $values);

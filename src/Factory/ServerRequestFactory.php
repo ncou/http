@@ -207,6 +207,13 @@ class ServerRequestFactory //implements ServerRequestFactoryInterface
 
         $hasPort = false;
         if (isset($server['HTTP_HOST'])) {
+            // TODO : ajouter un sanitize sur le host, et lever une erreur 400 si il est mal formé. https://github.com/Lullabot/entity-api-demos/blob/master/docroot/includes/bootstrap.inc#L643
+            // TODO : on devrait même lever une erreur 400 si le host est manquant ou en double ou mal formé =>
+            /*
+            Per RFC 7230: "A server MUST respond with a 400 (Bad Request) status code to any HTTP/1.1 request message that lacks a Host header field and to any request message that contains more than one Host header field or a Host header field with an invalid field-value."
+            https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.23
+            */
+
             $hostHeaderParts = explode(':', $server['HTTP_HOST']);
             $uri = $uri->withHost($hostHeaderParts[0]);
             if (isset($hostHeaderParts[1])) {
