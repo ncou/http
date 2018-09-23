@@ -400,7 +400,8 @@ class ServerRequest extends Request implements ServerRequestInterface
     public function getMediaType2()
     {
         $type = strtolower($request->getHeaderLine('Content-Type'));
-        list ($type) = explode(';', $type);
+        list($type) = explode(';', $type);
+
         return $type;
     }
 

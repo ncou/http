@@ -2,7 +2,6 @@
 
 namespace Tests\Http\Psr\Integration;
 
-use Chiron\Http\Factory\StreamFactory;
 use Chiron\Http\Psr\Stream;
 use Http\Psr7Test\StreamIntegrationTest;
 

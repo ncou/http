@@ -23,13 +23,9 @@ require_once __DIR__ . '/../../../../vendor/nyholm/psr7/src/Uri.php';
 //namespace Viserio\Component\HttpFactory;
 
 use Chiron\Http\Psr\ServerRequest;
-use Chiron\Http\Psr\Stream;
-use Chiron\Http\Psr\UploadedFile;
 use Chiron\Http\Psr\Uri;
 use Psr\Http\Message\ServerRequestFactoryInterface;
-use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriInterface;
 
 //use Nyholm\Psr7\Factory\ServerRequestFactory as ServerRequestFactoryPsr17;
@@ -38,7 +34,6 @@ use Psr\Http\Message\UriInterface;
 
 class ServerRequestFactory implements ServerRequestFactoryInterface
 {
-
     /**
      * Create a new server request.
      *

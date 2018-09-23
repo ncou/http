@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Chiron\Http\Factory;
 
 use Chiron\Http\Psr\UploadedFile;
-use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UploadedFileInterface;
 
 class UploadedFileFactory implements UploadedFileFactoryInterface

@@ -63,9 +63,10 @@ class StreamFactory implements StreamFactoryInterface
         $resource = @fopen($filename, $mode);
         if ($resource === false) {
             if (strlen($mode) === 0 || in_array($mode[0], ['r', 'w', 'a', 'x', 'c']) === false) {
-                throw new \InvalidArgumentException('The mode '.$mode.' is invalid.');
+                throw new \InvalidArgumentException('The mode ' . $mode . ' is invalid.');
             }
-            throw new \RuntimeException('The file '.$filename.' cannot be opened.');
+
+            throw new \RuntimeException('The file ' . $filename . ' cannot be opened.');
         }
 
         return new Stream($resource);

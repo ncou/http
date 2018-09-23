@@ -2,7 +2,6 @@
 
 namespace Tests\Http\Psr\Integration;
 
-use Chiron\Http\Factory\UploadedFileFactory;
 use Chiron\Http\Psr\Stream;
 use Chiron\Http\Psr\UploadedFile;
 use Http\Psr7Test\UploadedFileIntegrationTest;
