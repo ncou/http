@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Chiron\Http\Factory;
 
 use Chiron\Http\Psr\Response;
-use Interop\Http\Factory\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class ResponseFactory //implements ResponseFactoryInterface
+class ResponseFactory implements ResponseFactoryInterface
 {
     /**
      * Create a new response.

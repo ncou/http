@@ -18,13 +18,13 @@ namespace Chiron\Http\Factory;
 //namespace Zend\Diactoros;
 
 use Chiron\Http\Psr\Stream;
-use Interop\Http\Factory\StreamFactoryInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
  * Implementation of PSR HTTP streams.
  */
-class StreamFactory //implements StreamFactoryInterface
+class StreamFactory implements StreamFactoryInterface
 {
     /**
      * Create a new stream from a string.
@@ -59,7 +59,14 @@ class StreamFactory //implements StreamFactoryInterface
      */
     public function createStreamFromFile(string $filename, string $mode = 'r'): StreamInterface
     {
-        $resource = fopen($filename, $mode);
+        //$resource = fopen($filename, $mode);
+        $resource = @fopen($filename, $mode);
+        if ($resource === false) {
+            if (strlen($mode) === 0 || in_array($mode[0], ['r', 'w', 'a', 'x', 'c']) === false) {
+                throw new \InvalidArgumentException('The mode '.$mode.' is invalid.');
+            }
+            throw new \RuntimeException('The file '.$filename.' cannot be opened.');
+        }
 
         return new Stream($resource);
     }
