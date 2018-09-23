@@ -244,6 +244,7 @@ class Response implements ResponseInterface
 
         return $this;
     }
+
     // TODO : creer aussi un helper .rewind() qui serait un shortcut pour faire un body->rewrite() ????
 
     //--------------------------

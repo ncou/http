@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Http;
 
-use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
 use PHPUnit\Framework\TestCase;

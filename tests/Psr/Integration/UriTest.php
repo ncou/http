@@ -2,7 +2,6 @@
 
 namespace Tests\Http\Psr\Integration;
 
-use Chiron\Http\Factory\UriFactory;
 use Chiron\Http\Psr\Uri;
 use Http\Psr7Test\UriIntegrationTest;
 

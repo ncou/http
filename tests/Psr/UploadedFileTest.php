@@ -161,7 +161,7 @@ class UploadedFileTest extends TestCase
         ];
     }
 
-    private function createStream(string $content = '') : StreamInterface
+    private function createStream(string $content = ''): StreamInterface
     {
         $resource = fopen('php://temp', 'rw+');
         $stream = new Stream($resource);
