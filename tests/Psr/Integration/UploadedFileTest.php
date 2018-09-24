@@ -2,8 +2,8 @@
 
 namespace Tests\Http\Psr\Integration;
 
-use Chiron\Http\Factory\UploadedFileFactory;
 use Chiron\Http\Psr\Stream;
+use Chiron\Http\Psr\UploadedFile;
 use Http\Psr7Test\UploadedFileIntegrationTest;
 
 class UploadedFileTest extends UploadedFileIntegrationTest
@@ -13,6 +13,6 @@ class UploadedFileTest extends UploadedFileIntegrationTest
         $stream = new Stream(fopen('php://temp', 'wb+'));
         $stream->write('writing to tempfile');
 
-        return (new UploadedFileFactory())->createUploadedFile($stream);
+        return new UploadedFile($stream, $stream->getSize(), UPLOAD_ERR_OK);
     }
 }

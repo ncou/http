@@ -5,17 +5,11 @@ declare(strict_types=1);
 namespace Chiron\Http\Factory;
 
 use Chiron\Http\Psr\UploadedFile;
-use Interop\Http\Factory\UploadedFileFactoryInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UploadedFileInterface;
 
-/**
- * @author Tobias Nyholm <tobias.nyholm@gmail.com>
- *
- * @internal This class does not fall under our BC promise. We will adapt to changes to the http-interop/http-factory.
- * This class will be finalized when the PSR-17 is accepted.
- */
-class UploadedFileFactory //implements UploadedFileFactoryInterface
+class UploadedFileFactory implements UploadedFileFactoryInterface
 {
     /**
      * Create a new uploaded file.
@@ -44,6 +38,10 @@ class UploadedFileFactory //implements UploadedFileFactoryInterface
         string $clientFilename = null,
         string $clientMediaType = null
     ): UploadedFileInterface {
-        return new UploadedFile($stream, $stream->getSize(), $error, $clientFilename, $clientMediaType);
+        if ($size === null) {
+            $size = $stream->getSize();
+        }
+
+        return new UploadedFile($stream, $size, $error, $clientFilename, $clientMediaType);
     }
 }

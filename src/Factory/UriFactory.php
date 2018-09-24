@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Chiron\Http\Factory;
 
 use Chiron\Http\Psr\Uri;
-use Interop\Http\Factory\UriFactoryInterface;
+use Psr\Http\Message\UriFactoryInterface;
 use Psr\Http\Message\UriInterface;
 
-class UriFactory //implements UriFactoryInterface
+class UriFactory implements UriFactoryInterface
 {
     /**
      * Create a new URI.

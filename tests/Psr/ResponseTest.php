@@ -2,7 +2,6 @@
 
 namespace Tests\Http\Psr;
 
-use Chiron\Http\Factory\StreamFactory;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\Stream;
 use PHPUnit\Framework\TestCase;
@@ -142,7 +141,10 @@ class ResponseTest extends TestCase
 
     public function testWithBody()
     {
-        $b = (new StreamFactory())->createStream('0');
+        $resource = fopen('php://temp', 'rw+');
+        $b = new Stream($resource);
+        $b->write('0');
+
         $r = (new Response())->withBody($b);
         $this->assertInstanceOf(StreamInterface::class, $r->getBody());
         $this->assertSame('0', (string) $r->getBody());

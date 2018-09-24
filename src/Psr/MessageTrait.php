@@ -159,7 +159,7 @@ trait MessageTrait
      */
     private function validateAndTrimHeader($header, $values): array
     {
-        if (!is_array($values)) {
+        if (! is_array($values)) {
             $values = [$values];
         } elseif (empty($values)) {
             throw new \InvalidArgumentException('Header values must be strings, empty array given.');
@@ -168,14 +168,14 @@ trait MessageTrait
             $values = array_values($values);
         }
 
-        if (!is_string($header) || empty($header)) {
+        if (! is_string($header) || empty($header)) {
             throw new \InvalidArgumentException('Header name must be a string');
         }
 
         foreach ($values as &$v) {
             if (is_numeric($v)) {
                 $v = (string) $v;
-            } elseif (!is_string($v)) {
+            } elseif (! is_string($v)) {
                 throw new \InvalidArgumentException('Header values must be strings');
             }
         }

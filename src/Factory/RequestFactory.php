@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Chiron\Http\Factory;
 
 use Chiron\Http\Psr\Request;
-use Interop\Http\Factory\RequestFactoryInterface;
+use Chiron\Http\Psr\Uri;
+use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
 
-class RequestFactory //implements RequestFactoryInterface
+class RequestFactory implements RequestFactoryInterface
 {
     /**
      * Create a new request.
@@ -27,8 +28,12 @@ class RequestFactory //implements RequestFactoryInterface
         $body = null;
         $protocolVersion = '1.1';
 
-        if (! $uri instanceof UriInterface) {
+        if (is_string($uri)) {
             $uri = new Uri($uri);
+        }
+
+        if (! $uri instanceof UriInterface) {
+            throw new \InvalidArgumentException('Invalid URI provided; must be a string, or a Psr\Http\Message\UriInterface instance');
         }
 
         return new Request($method, $uri, $headers, $body, $protocolVersion);
