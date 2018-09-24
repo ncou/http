@@ -382,7 +382,7 @@ class Response implements ResponseInterface
     /*
     public function setStatusCodeByException($e)
     {
-        if ($e instanceof HttpException) {
+        if ($e instanceof HttpExceptionInterface) {
             $this->setStatusCode($e->statusCode);
         } else {
             $this->setStatusCode(500);
