@@ -15,7 +15,9 @@
         }
     },
     "require": {
-        "php": "^7.2"
+        "php": "^7.2",
+        "chiron/psr17factoryfinder": "^0.1",
+        "nyholm/psr7-server": "^0.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.0",
@@ -33,8 +35,12 @@
     },
     "extra": {
         "chiron": {
+            "providers": [
+                "Chiron\\Http\\Provider\\HttpFactoriesServiceBootloader",
+            ],
             "bootloaders": [
                 "Chiron\\Http\\Bootloader\\PublishHttpBootloader",
+                "Chiron\\Http\\Bootloader\\HttpBootloader",
                 "Chiron\\Http\\Bootloader\\SapiDispatcherBootloader"
             ]
         }
