@@ -1,5 +1,5 @@
 {
-    "name": "chiron/http",
+    "name": "chiron/http-psr",
     "type": "library",
     "description": "PSR7 Http implementation and PSR17 Factories",
     "keywords": ["psr-7","psr7","psr-17","psr17","factory","http","serverrequest", "response", "request"],
