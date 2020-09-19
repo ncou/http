@@ -36,7 +36,7 @@
     "extra": {
         "chiron": {
             "providers": [
-                "Chiron\\Http\\Provider\\HttpFactoriesServiceBootloader"
+                "Chiron\\Http\\Provider\\HttpFactoriesServiceProvider"
             ],
             "bootloaders": [
                 "Chiron\\Http\\Bootloader\\PublishHttpBootloader",
