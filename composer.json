@@ -35,6 +35,7 @@
         "chiron": {
             "bootloaders": [
                 "Chiron\\Http\\Bootloader\\PublishHttpBootloader",
+                "Chiron\\Http\\Bootloader\\SapiDispatcherBootloader"
             ]
         }
     }
