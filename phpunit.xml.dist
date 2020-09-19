@@ -1,39 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit backupGlobals="false"
-         backupStaticAttributes="false"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="false"
-         failOnRisky="true"
-         failOnWarning="true"
-         bootstrap="vendor/autoload.php"
-         >
-    <testsuites>
-        <testsuite name="Chiron PSR7 Http Tests">
-            <directory>tests/</directory>
-        </testsuite>
+<phpunit colors="true"
+         bootstrap="./vendor/autoload.php">
 
-        <testsuite name="Factories PSR17 Integration tests">
-            <directory>./vendor/http-interop/http-factory-tests/test</directory>
+    <testsuites>
+        <testsuite name="Test suite">
+            <directory>./tests/</directory>
         </testsuite>
     </testsuites>
 
     <filter>
-        <whitelist>
-            <directory suffix=".php">src/</directory>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src</directory>
         </whitelist>
     </filter>
 
-    <php>
-        <const name="REQUEST_FACTORY" value="Chiron\Http\Factory\RequestFactory"/>
-        <const name="RESPONSE_FACTORY" value="Chiron\Http\Factory\ResponseFactory"/>
-        <const name="SERVER_REQUEST_FACTORY" value="Chiron\Http\Factory\ServerRequestFactory"/>
-        <const name="UPLOADED_FILE_FACTORY" value="Chiron\Http\Factory\UploadedFileFactory"/>
-        <const name="URI_FACTORY" value="Chiron\Http\Factory\UriFactory"/>
-        <const name="STREAM_FACTORY" value="Chiron\Http\Factory\StreamFactory"/>
-    </php>
 </phpunit>

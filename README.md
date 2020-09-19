@@ -1,56 +1,44 @@
-[![Build Status](https://travis-ci.org/ncou/Chiron-Http.svg?branch=master)](https://travis-ci.org/ncou/Chiron-Http)
-[![Coverage Status](https://coveralls.io/repos/github/ncou/Chiron-Http/badge.svg?branch=master)](https://coveralls.io/github/ncou/Chiron-Http?branch=master)
-[![CodeCov](https://codecov.io/gh/ncou/Chiron-Http/branch/master/graph/badge.svg)](https://codecov.io/gh/ncou/Chiron-Http)
+# My Awesome Project
 
-[![Latest Stable Version](https://poser.pugx.org/chiron/http/v/stable.png)](https://packagist.org/packages/chiron/http)
-[![Total Downloads](https://img.shields.io/packagist/dt/chiron/http.svg?style=flat-square)](https://packagist.org/packages/chiron/http/stats)
-[![Monthly Downloads](https://img.shields.io/packagist/dm/chiron/http.svg?style=flat-square)](https://packagist.org/packages/chiron/http/stats)
+This is the catchphrase: what does this project do and how is it unique?
 
-[![StyleCI](https://styleci.io/repos/136793760/shield?style=flat)](https://styleci.io/repos/136793760)
-[![PHP-Eye](https://php-eye.com/badge/chiron/http/tested.svg?style=flat)](https://php-eye.com/package/chiron/http)
-[![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat)](https://github.com/phpstan/phpstan)
+[![Build Status](https://img.shields.io/travis/org/PHP-DI/PHP-DI/master.svg?style=flat-square)](https://travis-ci.org/PHP-DI/PHP-DI)
+[![Latest Version](https://img.shields.io/github/release/PHP-DI/PHP-DI.svg?style=flat-square)](https://packagist.org/packages/PHP-DI/php-di)
+[![Total Downloads](https://img.shields.io/packagist/dt/PHP-DI/PHP-DI.svg?style=flat-square)](https://packagist.org/packages/PHP-DI/php-di)
 
-[![Github Issues](http://githubbadges.herokuapp.com/ncou/http/issues.svg?style=flat-square)](https://github.com/ncou/chiron-http/issues)
-[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://doge.mit-license.org)
+Here is an additional quick introduction, if necessary.
 
+## Why?
 
-Chiron-Http
----------------
+Why does this project exist? Come on, don't delete this part. Fill it.
+Yes it's hard, but it's perhaps the most important part of the README.
 
-Strict PSR-7 implementation used by the Chiron Framework, but you may use it separately with any framework compatible with the PSR-7 standard.
-It's a fork from Nyholm/psr7.
-
-Come with the PSR-17 Factories.
+As to why *this* project exist, it's to serve as a template for future open
+source PHP projects. Of course, feel free to fork it and make your own recipe.
 
 ## Installation
 
-It's recommended that you use [Composer](https://getcomposer.org/) to install 
-this library.
+Describe how to install the project/library/framework/…
 
-```bash
-$ composer require chiron/http "^0.1"
-```
-
-This will install the `chiron/http` component and all required dependencies.
-PHP 7.0, or newer, is required.
+Make sure your installation instructions work by testing them!
 
 ## Usage
 
-Coming soon.
+Describe how to use the project. A gif or a short code example is the best
+way to show how it works. Also keep paragraphs short and sentences simple: not
+everybody speaks english well.
 
-## Tests
-
-To execute the test suite, you'll need phpunit.
+For the sake of the example here is how you can use this project template
+as a basis for your own repository:
 
 ```bash
-$ phpunit
+git clone https://github.com/ncou/project-template.git my-project
+cd my-project
+# Remove the git repository metadata
+rm -rf .git/
+# Start a brand new repository
+git init
+git add .
 ```
 
-## Credits
-
-- [Tobias Nyholm](https://github.com/Nyholm)
-
-## License
-
-This component is licensed under the MIT license. See [License File](LICENSE.md) 
-for more information.
+Easy peasy! Now you just have to code.

@@ -1,11 +1,5 @@
-.DS_Store
-.idea
-.tmp
-
-composer.phar
+/vendor/
 composer.lock
-vendor/
-
-clover.xml
-coveralls-upload.json
-phpunit.xml
+.phplint-cache
+.phpcs-cache
+.idea/
