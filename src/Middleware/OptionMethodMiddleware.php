@@ -16,6 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Chiron\Http\Message\RequestMethod;
 
 class OptionMethodMiddleware implements MiddlewareInterface
 {
@@ -41,7 +42,7 @@ class OptionMethodMiddleware implements MiddlewareInterface
             // TODO : regarder si ce code peut aider : https://github.com/illuminate/routing/blob/master/RouteCollection.php#L234
 
             // TODO : https://github.com/zendframework/zend-expressive-router/blob/master/src/Middleware/ImplicitOptionsMiddleware.php#L88
-            if ($request->getMethod() === 'OPTIONS') {
+            if ($request->getMethod() === RequestMethod::OPTIONS) {
                 // TODO : créer une méthode getAllowedMethods() dans la class MethodNotAllowedHttpException.
                 // TODO : vérifier si il n'est pas possible de forcer le code à 200 au lieu de 405 dans le cas de cette erreur !!! comme ca c'est le middleware ErrorHandler qui se chargera de créer la réponse.
                 return ($this->responseFactory->createResponse())->withHeader('Allow', $exception->getHeaders()['Allow']);

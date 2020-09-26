@@ -64,6 +64,9 @@ declare(strict_types=1);
 
 //https://github.com/symfony/symfony/blob/e60a876201b5b306d0c81a24d9a3db997192079c/src/Symfony/Component/ErrorHandler/Debug.php
 
+// TODO : trés bon middleware pour whoops avec un content negociator et des classes pour les formatter !!!!
+// https://github.com/franzliedke/whoops-middleware
+
 namespace Chiron\Http\Middleware;
 
 use Chiron\ErrorHandler\ErrorManager;
@@ -75,9 +78,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
 
 // TODO : déplacer le middleware de gestion des Errors ErrorHandlerMiddleware dans le répertoire "ErrorHandler"
-// TODO : passer la classe en final ? + virer les propriétés protected ????
-
-class ErrorHandlerMiddleware implements MiddlewareInterface
+final class ErrorHandlerMiddleware implements MiddlewareInterface
 {
     /**
      * @var ErrorManager

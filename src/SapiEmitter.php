@@ -10,25 +10,48 @@ use Psr\Http\Message\ResponseInterface;
 //https://github.com/zendframework/zend-expressive-router/blob/master/src/Middleware/ImplicitHeadMiddleware.php
 //https://github.com/zendframework/zend-expressive-router/blob/e76e6abd277c73268d27d92f7b385991e86488b9/test/Middleware/ImplicitHeadMiddlewareTest.php
 
+//https://github.com/slimphp/Slim/blob/4.x/Slim/ResponseEmitter.php
+
+//https://github.com/yiisoft/yii-web/blob/master/src/SapiEmitter.php#L16
+//https://github.com/yiisoft/yii-web/blob/master/src/SapiEmitter.php#L95
 
 // Lever des exception si les infos sont déjà émises (les headers ou si il y a déjà eu un echo de fait !!!) : https://github.com/Furious-PHP/http-runner/blob/master/src/Checker.php#L12   +   https://github.com/Furious-PHP/http-runner/tree/master/src/Exception    +    https://github.com/Furious-PHP/http-runner/blob/master/src/Runner.php#L22
 // https://github.com/cakephp/cakephp/blob/master/src/Http/ResponseEmitter.php#L69
 
-// TODO : Interface à virer elle ne sert pas à grand choses !!!!!
-// TODO : ajouter une méthode public ->withoutBody(bool) ou 'shouldOutputBody(bool)' pour gérer le cas de la request méthode === GET, et pour ne pas passer ce booléen lors de la méthode emit, mais bien avant !!!!
+
+// TODO : améliorer la gestion des "no body response" (request = HEAD, code http = 204...etc) en utilisant le code suivant :
+//https://github.com/reactphp/http/blob/083c25ef15a314e6634e4ded9172af310c06b854/src/Io/Sender.php#L113
+//https://github.com/walkor/http-client/blob/950923c10e7f6dcc16fdb693f32c2e58470eeabe/src/Request.php#L338
+//https://github.com/swoole/swoole-src/blob/af6085243387e999548aeb47c0bb5af188114f02/core-tests/deps/llhttp/src/http.c#L115
+
+// TODO : améliorer la gestion du content length : https://github.com/reactphp/http/blob/271dd95975910addd61f51aa35360fa62ad6a1f1/src/Io/StreamingServer.php#L262
+// https://github.com/reactphp/http/blob/083c25ef15a314e6634e4ded9172af310c06b854/src/Io/Sender.php#L80
+// TODO : gestion du HEAD :   https://github.com/reactphp/http/blob/271dd95975910addd61f51aa35360fa62ad6a1f1/src/Io/StreamingServer.php#L320
+// TODO : améliorer la gestion de la date ajoutée automatiquement : https://github.com/reactphp/http/blob/271dd95975910addd61f51aa35360fa62ad6a1f1/src/Io/StreamingServer.php#L254
+
+//https://github.com/symfony/symfony/blob/master/src/Symfony/Component/HttpFoundation/Response.php#L278
+
+
+// TODO : il devrait pas il y avoir un test sur la méthode request === CONNECT car je pense qu'il n'y a pas non plus de body dans ce cas là !!!!
+// TODO : je me demande aussi si ce n'est pas le cas pour les request de type HEAD/TRACE/OPTIONS => https://github.com/amphp/aerys/blob/b47982604a64d8d49f7fc66cdbaf6940d97f3300/lib/Http1Driver.php#L298
+
+
+
 // TODO : externaliser la méthode pour définir la tailler du buffer, elle pourra être appeller dans un bootloader pour modifier cette valeur.
 final class SapiEmitter
 {
+    // TODO : créer une méthode statique dans la classe StatusCode::isEmpty($code) pour avec ce tableau là ? idem en créant une méthode isInformational($code) et isCacheable()...etc, en se basant sur les méthodes de symfony : https://github.com/symfony/symfony/blob/master/src/Symfony/Component/HttpFoundation/Response.php#L1217
     /** @var array list of http code who MUST not have a body */
-    private const NO_BODY_RESPONSE_CODES = [204, 205, 304];
+    private const NO_BODY_RESPONSE_CODES = [204, 304];
 
     /** @var int default buffer size (8Mb) */
+    // TODO : cette valeur est paramétrée dans le fichier http.php.dist et dans la classe HttpConfig il faudrait virer ces infos de ces 2 fichiers car c'est propre au sapi et pas à la configuration générale du module http !!!!
     private const DEFAULT_BUFFER_SIZE = 8 * 1024 * 1024;
 
     /**
      * Construct the Emitter, and define the chunk size used to emit the body.
      *
-     * @param int $bufferSize
+     * @param int $bufferSize Should be greater than zero.
      */
     public function __construct(int $bufferSize = self::DEFAULT_BUFFER_SIZE)
     {
@@ -45,14 +68,12 @@ final class SapiEmitter
      * @param ResponseInterface $response
      */
     // TODO : lever une exception si les headers sont déjà envoyés !!!!   https://github.com/yiisoft/yii-web/blob/master/src/SapiEmitter.php#L45
-    // TODO : retourner void dans cette méthode emit, car le booléen ne sera jamais utilisé !!!!
     //https://github.com/symfony/symfony/blob/master/src/Symfony/Component/HttpFoundation/Response.php#L391
-    public function emit(ResponseInterface $response, bool $withoutBody = false): bool
+    public function emit(ResponseInterface $response): void
     {
         //TODO : créer deux méthodes privées "sendHeaders" et "sendContent" comme dans symfony ? Cela merpettrait de regrouper la vérification du isResponseEmpty+ la ligne de code emitBody dans une sous fonction emitContent() par exemple !!!
 
-        // TODO : renommer cette variable en $isEmpty
-        $withoutBody = $withoutBody || $this->isResponseEmpty($response);
+        $isEmpty = $this->isResponseEmpty($response);
 
         // TODO : lever une exception si les headers sont déjà envoyés !!!!
         // headers have already been sent by the developer ?
@@ -62,11 +83,11 @@ final class SapiEmitter
             $this->emitStatusLine($response);
         }
 
-        if (! $withoutBody) {
+        // TODO : il devrait pas il y avoir un test sur la méthode request === CONNECT car je pense qu'il n'y a pas non plus de body dans ce cas là !!!!
+        // TODO : je me demande aussi si ce n'est pas le cas pour les request de type HEAD/TRACE/OPTIONS => https://github.com/amphp/aerys/blob/b47982604a64d8d49f7fc66cdbaf6940d97f3300/lib/Http1Driver.php#L298
+        if (! $isEmpty) {
             $this->emitBody($response);
         }
-
-        return true;
     }
 
     /**
@@ -126,7 +147,7 @@ final class SapiEmitter
 
         while (! $stream->eof()) {
             echo $stream->read($this->bufferSize);
-            flush();
+            //flush();
         }
     }
 
@@ -137,13 +158,16 @@ final class SapiEmitter
      *
      * @return bool
      */
-    //https://github.com/yiisoft/yii-web/blob/master/src/SapiEmitter.php#L95
+    // TODO : utiliser ce bout de code pour vérifier si la réponse est vide :
+    // https://github.com/guzzle/psr7/blob/be3bd52821cf797bbcfe34874bdd6eb5832f7af8/src/functions.php#L823
+    // https://github.com/yiisoft/yii-web/blob/master/src/SapiEmitter.php#L102
     private function isResponseEmpty(ResponseInterface $response): bool
     {
         if (in_array($response->getStatusCode(), self::NO_BODY_RESPONSE_CODES, true)) {
             return true;
         }
 
+        // TODO : je pense qu'on simple $stream->getSize() si différent de null et supérieur à 0 ca devrait suffire comme test !!!!
         $stream = $response->getBody();
         $seekable = $stream->isSeekable();
         if ($seekable) {
@@ -152,19 +176,4 @@ final class SapiEmitter
 
         return $seekable ? $stream->read(1) === '' : $stream->eof();
     }
-
-    /**
-     * This is to be in compliance with RFC 2616, Section 9.
-     * If the incoming request method is HEAD, we need to ensure that the response body
-     * is empty as the request may fall back on a GET route handler due to FastRoute's
-     * routing logic which could potentially append content to the response body
-     * https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4
-     */
-    //https://github.com/slimphp/Slim/blob/4.x/Slim/App.php#L224
-    /*
-    $method = strtoupper($request->getMethod());
-    if ($method === 'HEAD') {
-        $emptyBody = $this->responseFactory->createResponse()->getBody();
-        return $response->withBody($emptyBody);
-    }*/
 }

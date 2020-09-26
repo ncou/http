@@ -17,8 +17,8 @@ use Chiron\Container\BindingInterface;
 // TODO : classe à déplacer dans le package chiron/routing ????
 
 // https://github.com/cakephp/cakephp/blob/master/src/Http/Runner.php#L69
-
 //https://github.com/cakephp/cakephp/blob/master/src/Http/MiddlewareQueue.php
+
 
 // TODO : faire étendre cette classe de la classe Pipeline::class ????? ou fusionner le code ????
 // TODO : utiliser une SplPriorityQueue pour ajouter des middlewares dans cette classe ????
@@ -27,7 +27,7 @@ use Chiron\Container\BindingInterface;
 // TODO : renommer la classe en HttpRunner
 final class Http implements SingletonInterface
 {
-    // TODO : externaliser ces constantes dans une classe "Priority" ????
+    // TODO : externaliser ces constantes dans une classe "Priority" ???? ou alors à minima les prefixer par 'PRIO_' ou 'PRIORITY_' car c'est pas évident quand on utilise cette constante dans une classe qu'on parle de priorité. (voici à date ce que ca donne : addMiddleware(MyMiddleware::class, Http::MAX))
     /** @var int */
     public const MIN = -300;
     /** @var int */
@@ -77,6 +77,7 @@ final class Http implements SingletonInterface
      * @return self
      */
     // TODO : remonter l'appel au HttpDecorator::toMiddleware() dans cette méthode ci dessous !!!!
+    // TODO : ajouter une vérification pour ne pas insérer Xfois le même middleware, par contre si il y a une différence de priorité entre les 2 instertions c'est pas normal et donc il faudra lever une exception !!!! ou alors éventuellement remplacer automatiquement la priorité avec la plus élevée.
     public function addMiddleware($middleware, int $priority = self::NORMAL): self
     {
         $this->queue->insert($middleware, [$priority, $this->serial--]);
