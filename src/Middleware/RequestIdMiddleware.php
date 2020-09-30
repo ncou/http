@@ -35,7 +35,8 @@ final class RequestIdMiddleware implements MiddlewareInterface
         // generate an unique identifier if not already present.
         // TODO : il faudrait plutot faire un if (! $request->hasHeader(xxx)) plutot que le test avec empty
         if (empty($id)) {
-            $id = Random::generateId();
+            // generate a random 128 bit value encoded as hexadecimal.
+            $id = Random::generateId(16);
             $request = $request->withHeader(self::HEADER_NAME, $id);
         }
 

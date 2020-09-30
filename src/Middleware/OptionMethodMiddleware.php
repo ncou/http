@@ -7,10 +7,10 @@ namespace Chiron\Http\Middleware;
 // TODO : example : https://github.com/zendframework/zend-expressive-router/blob/master/src/Middleware/RouteMiddleware.php
 // TODO : regarder ici https://github.com/zrecore/Spark/blob/master/src/Handler/RouteHandler.php    et https://github.com/equip/framework/blob/master/src/Handler/DispatchHandler.php
 
-//namespace Middlewares;
+//https://github.com/zendframework/zend-expressive-router/blob/8983c9422277ab30bc1185bfbbb72930837c8206/src/Middleware/ImplicitOptionsMiddleware.php
+//https://github.com/mezzio/mezzio-router/blob/3.2.x/src/Middleware/ImplicitOptionsMiddleware.php
 
 use Chiron\Http\Exception\Client\MethodNotAllowedHttpException;
-//use Chiron\Http\Psr\Response;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

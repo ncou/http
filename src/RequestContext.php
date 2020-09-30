@@ -12,7 +12,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use SplPriorityQueue;
 use Chiron\Container\BindingInterface;
 use Psr\Container\NotFoundExceptionInterface;
-use Chiron\Exception\ApplicationException;
+use Chiron\Core\Exception\ScopeException;
 use Psr\Container\ContainerInterface;
 
 // Méthode pour détecter le "base_path" de l'application.
@@ -72,7 +72,7 @@ final class RequestContext implements SingletonInterface
      *
      * @return ServerRequestInterface
      *
-     * @throws ApplicationException
+     * @throws ScopeException
      */
     // TODO : renommer la méthode en getRequest() ????
     public function request(): ServerRequestInterface
@@ -80,7 +80,7 @@ final class RequestContext implements SingletonInterface
         try {
             $request = $this->container->get(ServerRequestInterface::class);
         } catch (NotFoundExceptionInterface $e) {
-            throw new ApplicationException(
+            throw new ScopeException(
                 'Unable to get "ServerRequestInterface" in active container scope.',
                 $e->getCode(),
                 $e
@@ -188,8 +188,6 @@ final class RequestContext implements SingletonInterface
      * The "X-Forwarded-Host" header must contain the client host name.
      *
      * @return string
-     *
-     * @throws SuspiciousOperationException when the host name is invalid or not trusted
      */
     public function getHost()
     {
