@@ -20,8 +20,8 @@ use Psr\Container\ContainerInterface;
 
 
 
-//https://github.com/spiral/http/blob/6d95493328f40dc71840119e006eaa42a443f82f/src/Request/InputManager.php
-
+//https://github.com/spiral/http/blob/6d95493328f40dc71840119e006eaa42a443f82f/src/Request/InputManager.php#49
+//https://github.com/symfony/http-foundation/blob/master/Request.php#L273
 
 //https://github.com/symfony/symfony/blob/e60a876201b5b306d0c81a24d9a3db997192079c/src/Symfony/Component/HttpFoundation/UrlHelper.php
 
@@ -55,8 +55,47 @@ final class RequestContext implements SingletonInterface
     private $request = null;
     /** @var ContainerInterface */
     private $container = null;
-    /** @var InputBag[] */
+    /** @var ParameterBag[] */
     private $bags = [];
+
+    /**
+     * Associations between bags and representing class/request method.
+     *
+     * @invisible
+     * @var array
+     */
+    // TODO : utiliser plutot par défaut des "ParameterBag" en fait c'est la classe InputBag qu'il faudrait renommer en ParameterBag c'est plus logic comme nom !!!!
+    private $bagAssociations = [
+        'headers'    => [
+            'class'  => ParameterBag::class, //HeadersBag::class,
+            'source' => 'getHeaders',
+        ],
+        'data'       => [
+            'class'  => ParameterBag::class, //InputBag::class,
+            'source' => 'getParsedBody',
+        ],
+        'query'      => [
+            'class'  => ParameterBag::class, //InputBag::class,
+            'source' => 'getQueryParams',
+        ],
+        'cookies'    => [
+            'class'  => ParameterBag::class, //InputBag::class,
+            'source' => 'getCookieParams',
+        ],
+        'files'      => [
+            'class'  => ParameterBag::class, //FilesBag::class,
+            'source' => 'getUploadedFiles',
+        ],
+        'server'     => [
+            'class'  => ParameterBag::class, //ServerBag::class,
+            'source' => 'getServerParams',
+        ],
+        'attributes' => [
+            'class'  => ParameterBag::class, //InputBag::class,
+            'source' => 'getAttributes',
+        ],
+    ];
+
 
     /**
      * @param ContainerInterface $container
@@ -66,6 +105,152 @@ final class RequestContext implements SingletonInterface
     {
         $this->container = $container;
     }
+
+    /**
+     * @param string $name
+     * @return ParameterBag
+     */
+    public function __get(string $name): ParameterBag
+    {
+        return $this->bag($name);
+    }
+
+    /**
+     * Get bag instance or create new one on demand.
+     *
+     * @param string $name
+     * @return ParameterBag
+     */
+    public function bag(string $name): ParameterBag
+    {
+        // ensure proper request association
+        $this->request();
+
+        if (isset($this->bags[$name])) {
+            return $this->bags[$name];
+        }
+
+        if (!isset($this->bagAssociations[$name])) {
+            throw new \RuntimeException("Undefined input bag '{$name}'");
+        }
+
+        $class = $this->bagAssociations[$name]['class'];
+        $data = call_user_func([$this->request(), $this->bagAssociations[$name]['source']]);
+
+        if (!is_array($data)) {
+            $data = (array)$data;
+        }
+
+        return $this->bags[$name] = new $class($data);
+    }
+
+
+    /**
+     * @param string      $name
+     * @param mixed       $default
+     * @param bool|string $implode Implode header lines, false to return header as array.
+     * @return mixed
+     */
+    public function header(string $name, $default = null, $implode = ',')
+    {
+        return $this->headers->get($name, $default, $implode);
+    }
+
+    /**
+     * @param string $name
+     * @param mixed  $default
+     * @return mixed
+     *
+     * @see data()
+     */
+    public function post(string $name, $default = null)
+    {
+        return $this->data($name, $default);
+    }
+
+    /**
+     * @param string $name
+     * @param mixed  $default
+     *
+     * @return mixed
+     */
+    public function data(string $name, $default = null)
+    {
+        return $this->data->get($name, $default);
+    }
+
+    /**
+     * Reads data from data array, if not found query array will be used as fallback.
+     *
+     * @param string $name
+     * @param mixed  $default
+     * @return mixed
+     */
+    public function input(string $name, $default = null)
+    {
+        return $this->data($name, $this->query($name, $default));
+    }
+
+    /**
+     * @param string $name
+     * @param mixed  $default
+     * @return mixed
+     */
+    public function query(string $name, $default = null)
+    {
+        return $this->query->get($name, $default);
+    }
+
+    /**
+     * @param string $name
+     * @param mixed  $default
+     * @return mixed
+     */
+    public function cookie(string $name, $default = null)
+    {
+        return $this->cookies->get($name, $default);
+    }
+
+    /**
+     * @param string $name
+     * @param mixed  $default
+     *
+     * @return UploadedFileInterface|null
+     */
+    public function file(string $name, $default = null): ?UploadedFileInterface
+    {
+        return $this->files->get($name, $default);
+    }
+
+    /**
+     * @param string $name
+     * @param mixed  $default
+     *
+     * @return mixed
+     */
+    public function server(string $name, $default = null)
+    {
+        return $this->server->get($name, $default);
+    }
+
+    /**
+     * @param string $name
+     * @param mixed  $default
+     *
+     * @return mixed
+     */
+    public function attribute(string $name, $default = null)
+    {
+        return $this->attributes->get($name, $default);
+    }
+
+
+
+
+
+
+
+
 
     /**
      * Get active instance of ServerRequestInterface and reset all bags if instance changed.
@@ -95,7 +280,6 @@ final class RequestContext implements SingletonInterface
 
         return $this->request;
     }
-
 
     /**
      * Gets the request's scheme.
