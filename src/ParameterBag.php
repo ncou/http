@@ -4,79 +4,101 @@ declare(strict_types=1);
 
 namespace Chiron\Http;
 
-use Spiral\Http\Exception\DotNotFoundException;
-use Spiral\Http\Exception\InputException;
+use LogicException;
+use ArrayAccess;
+use Countable;
+use IteratorAggregate;
+use ArrayIterator;
+use Traversable;
 
 /**
- * Generic data accessor, used to read properties of active request.
+ * Generic parameters accessor, used to read key/value pairs.
  */
-class ParameterBag implements \Countable, \IteratorAggregate, \ArrayAccess
+class ParameterBag implements ArrayAccess, Countable, IteratorAggregate
 {
     /** @var array */
-    private $data = [];
+    private $parameters = [];
 
     /**
-     * @param array  $data
+     * @param array  $parameters
      */
-    public function __construct(array $data)
+    public function __construct(array $parameters)
     {
-        $this->data = $data;
+        $this->parameters = $parameters;
     }
 
     /**
-     * @return array
-     */
-    public function __debugInfo()
-    {
-        return $this->all();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function count(): int
-    {
-        return count($this->all());
-    }
-
-    /**
+     * Returns all the parameter key/value pairs.
+     *
      * @return array
      */
     public function all(): array
     {
-        try {
-            return $this->dotGet('');
-        } catch (DotNotFoundException $e) {
-            return [];
-        }
+        return $this->parameters;
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getIterator(): \Traversable
-    {
-        return new \ArrayIterator($this->all());
-    }
-
-    /**
-     * Fetch only specified keys from property values. Missed values can be filled with defined
-     * filler. Only one variable layer can be fetched (no dot notation).
+     * Returns the parameter keys.
      *
-     * @param array $keys
-     * @param bool  $fill Fill missing key with filler value.
-     * @param mixed $filler
-     * @return array
+     * @return array An array of parameter keys
      */
-    public function fetch(array $keys, bool $fill = false, $filler = null)
+    public function keys()
     {
-        $result = array_intersect_key($this->all(), array_flip($keys));
-        ;
-        if (!$fill) {
-            return $result;
+        return array_keys($this->parameters);
+    }
+
+    /**
+     * Filter key.
+     *
+     * @param string $key
+     * @param mixed  $default The default value if the parameter key does not exist
+     * @param int    $filter  FILTER_* constant
+     * @param mixed  $options Filter options
+     *
+     * @see https://php.net/filter-var
+     *
+     * @return mixed
+     */
+    public function filter(string $key, $default = null, int $filter = FILTER_DEFAULT, $options = [])
+    {
+        $value = $this->get($key, $default);
+
+        // Always turn $options into an array - this allows filter_var option shortcuts.
+        if (! is_array($options) && $options) {
+            $options = ['flags' => $options];
         }
 
-        return $result + array_fill_keys($keys, $filler);
+        // Add a convenience check for arrays.
+        if (is_array($value) && ! isset($options['flags'])) {
+            $options['flags'] = FILTER_REQUIRE_ARRAY;
+        }
+
+        return filter_var($value, $filter, $options);
+    }
+
+    /**
+     * Returns a parameter by name (default value used if not found).
+     *
+     * @param string $key
+     * @param mixed  $default The default value if the parameter key does not exist
+     *
+     * @return mixed
+     */
+    public function get(string $key, $default = null)
+    {
+        return $this->has($key) ? $this->parameters[$key] : $default;
+    }
+
+    /**
+     * Check if the parameter is defined.
+     *
+     * @param string $key
+     *
+     * @return bool true if the parameter exists, false otherwise
+     */
+    public function has(string $key): bool
+    {
+        return array_key_exists($key, $this->parameters);
     }
 
     /**
@@ -88,44 +110,11 @@ class ParameterBag implements \Countable, \IteratorAggregate, \ArrayAccess
     }
 
     /**
-     * Check if field presented (can be empty) by it's name. Dot notation allowed.
-     *
-     * @param string $name
-     * @return bool
-     */
-    public function has(string $name): bool
-    {
-        try {
-            $this->dotGet($name);
-        } catch (DotNotFoundException $e) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function offsetGet($offset)
     {
         return $this->get($offset);
-    }
-
-    /**
-     * Get property or return default value. Dot notation allowed.
-     *
-     * @param string $name
-     * @param mixed  $default
-     * @return mixed
-     */
-    public function get(string $name, $default = null)
-    {
-        try {
-            return $this->dotGet($name);
-        } catch (DotNotFoundException $e) {
-            return $default;
-        }
     }
 
     /**
@@ -135,7 +124,7 @@ class ParameterBag implements \Countable, \IteratorAggregate, \ArrayAccess
      */
     public function offsetSet($offset, $value): void
     {
-        throw new InputException('InputBag is immutable');
+        throw new LogicException('ParameterBag is immutable');
     }
 
     /**
@@ -145,37 +134,22 @@ class ParameterBag implements \Countable, \IteratorAggregate, \ArrayAccess
      */
     public function offsetUnset($offset): void
     {
-        throw new InputException('InputBag is immutable');
+        throw new LogicException('ParameterBag is immutable');
     }
 
     /**
-     * Get element using dot notation.
-     *
-     * @param string $name
-     * @return mixed|null
-     *
-     * @throws DotNotFoundException
+     * {@inheritdoc}
      */
-    private function dotGet(string $name)
+    public function count(): int
     {
-        $data = $this->data;
+        return count($this->parameters);
+    }
 
-        $path = $name;
-        if (empty($path)) {
-            return $data;
-        }
-
-        $path = explode('.', rtrim($path, '.'));
-
-        foreach ($path as $step) {
-            if (!is_array($data) || !array_key_exists($step, $data)) {
-                // DotNotFoundException
-                throw new \LogicException("Unable to find requested element '{$name}'");
-            }
-
-            $data = &$data[$step];
-        }
-
-        return $data;
+    /**
+     * {@inheritdoc}
+     */
+    public function getIterator(): Traversable
+    {
+        return new ArrayIterator($this->parameters);
     }
 }

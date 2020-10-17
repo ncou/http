@@ -9,11 +9,11 @@ use Chiron\Facade\HttpDecorator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use SplPriorityQueue;
 use Chiron\Container\BindingInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Chiron\Core\Exception\ScopeException;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\UploadedFileInterface;
 
 // Méthode pour détecter le "base_path" de l'application.
 //https://github.com/drupal/drupal/blob/9.0.x/core/lib/Drupal/Core/DrupalKernel.php#L1087
@@ -45,10 +45,11 @@ use Psr\Container\ContainerInterface;
 
 
 
-
+// TODO : mettre dans une classe xxxTrait tout ce qui touche à la partie "bags" ca rendra le code plus propre de le spéarer dans une autre classe !!!!
 // TODO : utiliser aussi une classe RouteContext qui serait retournée par une méthode getRouteContext() de cette classe ???? https://github.com/slimphp/Slim/blob/4.x/Slim/Routing/RouteContext.php
 // TODO : ajouter un __call() pour permettre d'appeller l'ensemble des méthodes existantes dans la classe ServerRequestInterface.
 // TODO : ajouter des méthodes pour récupérer l'ip le host et port + scheme derriére un proxy => ajouter a liste des ip pour les trustiesProxy + gérer les headers X-Forwarded
+// TODO : empécher de cloner cette classe ????
 final class RequestContext implements SingletonInterface
 {
     /** @var ServerRequestInterface */
@@ -64,35 +65,36 @@ final class RequestContext implements SingletonInterface
      * @invisible
      * @var array
      */
-    // TODO : utiliser plutot par défaut des "ParameterBag" en fait c'est la classe InputBag qu'il faudrait renommer en ParameterBag c'est plus logic comme nom !!!!
+    // TODO : utiliser des constantes public pour le nom des bags ??? cela permettra lorsqu'on utilise la méthode ->bag('xxxx') d'utiliser la constante, exemple : ->bag(RequestContext::HEADERS)
+    // TODO : renommer "data" en "body" ???
     private $bagAssociations = [
         'headers'    => [
-            'class'  => ParameterBag::class, //HeadersBag::class,
+            'class'  => HeaderBag::class,
             'source' => 'getHeaders',
         ],
+        'server'     => [
+            'class'  => ServerBag::class,
+            'source' => 'getServerParams',
+        ],
         'data'       => [
-            'class'  => ParameterBag::class, //InputBag::class,
+            'class'  => ParameterBag::class,
             'source' => 'getParsedBody',
         ],
         'query'      => [
-            'class'  => ParameterBag::class, //InputBag::class,
+            'class'  => ParameterBag::class,
             'source' => 'getQueryParams',
         ],
         'cookies'    => [
-            'class'  => ParameterBag::class, //InputBag::class,
+            'class'  => ParameterBag::class,
             'source' => 'getCookieParams',
         ],
-        'files'      => [
-            'class'  => ParameterBag::class, //FilesBag::class,
-            'source' => 'getUploadedFiles',
-        ],
-        'server'     => [
-            'class'  => ParameterBag::class, //ServerBag::class,
-            'source' => 'getServerParams',
-        ],
         'attributes' => [
-            'class'  => ParameterBag::class, //InputBag::class,
+            'class'  => ParameterBag::class,
             'source' => 'getAttributes',
+        ],
+        'files'      => [
+            'class'  => FileBag::class,
+            'source' => 'getUploadedFiles',
         ],
     ];
 
@@ -121,6 +123,7 @@ final class RequestContext implements SingletonInterface
      * @param string $name
      * @return ParameterBag
      */
+    // TODO : forcer un strtolower sur le paramétre $name ????
     public function bag(string $name): ParameterBag
     {
         // ensure proper request association
@@ -131,7 +134,7 @@ final class RequestContext implements SingletonInterface
         }
 
         if (!isset($this->bagAssociations[$name])) {
-            throw new \RuntimeException("Undefined input bag '{$name}'");
+            throw new \RuntimeException("Undefined input bag '{$name}'"); // TODO : lister les choix possible dans cette exception !!!
         }
 
         $class = $this->bagAssociations[$name]['class'];
@@ -142,18 +145,6 @@ final class RequestContext implements SingletonInterface
         }
 
         return $this->bags[$name] = new $class($data);
-    }
-
-
-    /**
-     * @param string      $name
-     * @param mixed       $default
-     * @param bool|string $implode Implode header lines, false to return header as array.
-     * @return mixed
-     */
-    public function header(string $name, $default = null, $implode = ',')
-    {
-        return $this->headers->get($name, $default, $implode);
     }
 
     /**
@@ -169,17 +160,6 @@ final class RequestContext implements SingletonInterface
     }
 
     /**
-     * @param string $name
-     * @param mixed  $default
-     *
-     * @return mixed
-     */
-    public function data(string $name, $default = null)
-    {
-        return $this->data->get($name, $default);
-    }
-
-    /**
      * Reads data from data array, if not found query array will be used as fallback.
      *
      * @param string $name
@@ -189,6 +169,17 @@ final class RequestContext implements SingletonInterface
     public function input(string $name, $default = null)
     {
         return $this->data($name, $this->query($name, $default));
+    }
+
+    /**
+     * @param string $name
+     * @param mixed  $default
+     *
+     * @return mixed
+     */
+    public function data(string $name, $default = null)
+    {
+        return $this->data->get($name, $default);
     }
 
     /**
@@ -215,17 +206,6 @@ final class RequestContext implements SingletonInterface
      * @param string $name
      * @param mixed  $default
      *
-     * @return UploadedFileInterface|null
-     */
-    public function file(string $name, $default = null): ?UploadedFileInterface
-    {
-        return $this->files->get($name, $default);
-    }
-
-    /**
-     * @param string $name
-     * @param mixed  $default
-     *
      * @return mixed
      */
     public function server(string $name, $default = null)
@@ -242,6 +222,28 @@ final class RequestContext implements SingletonInterface
     public function attribute(string $name, $default = null)
     {
         return $this->attributes->get($name, $default);
+    }
+
+    /**
+     * @param string      $name
+     * @param mixed       $default
+     * @param bool|string $implode Implode header lines, false to return header as array.
+     * @return mixed
+     */
+    public function header(string $name, $default = null, $implode = ',')
+    {
+        return $this->headers->get($name, $default, $implode);
+    }
+
+     /**
+     * @param string $name
+     * @param UploadedFileInterface|null  $default
+     *
+     * @return UploadedFileInterface|null
+     */
+    public function file(string $name, ?UploadedFileInterface $default = null): ?UploadedFileInterface
+    {
+        return $this->files->get($name, $default);
     }
 
 
