@@ -37,6 +37,7 @@ final class Http implements RequestHandlerInterface
     }
 
     // TODO : améliorer le code par rapport à l'utilisation du HttpDecorator !!!!
+    // TODO : eventuellement créer une classe PilelineBuilder qui prend dans le constructeur un FactoryInterface, et qui via 2 méthodes ->addMiddlewares(array<string>) et setHandler(string) se chargerai via la méthode ->build de retourner un objet Pileline qu'on pourrait ensuite executer !!!!
     private function buildPipeline(MiddlewareQueue $middlewares): Pipeline
     {
         $pipeline = new Pipeline();

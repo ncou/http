@@ -16,6 +16,7 @@ use Chiron\Container\BindingInterface;
 
 //https://github.com/zendframework/zend-stdlib/blob/master/src/SplPriorityQueue.php
 
+// TODO : classe à déplacer dans le package chiron/pipeline ????
 // TODO : code à nettoyer et à améliorer !!!!
 final class MiddlewareQueue extends SplPriorityQueue implements SingletonInterface
 {

@@ -17,6 +17,7 @@ use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriFactoryInterface;
 use Psr\Http\Message\UriInterface;
 
+// TODO : cette classe ne sert pas vraiment !!!! On la supprime ????
 final class HttpFactory
 {
     /** RequestFactoryInterface */
