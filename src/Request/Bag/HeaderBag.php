@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Http;
+namespace Chiron\Http\Request\Bag;
 
 /**
  * Provides access to headers property of server request, will normalize every requested name for

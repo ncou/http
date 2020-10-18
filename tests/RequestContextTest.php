@@ -9,10 +9,11 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Nyholm\Psr7\ServerRequest;
 use Chiron\Container\Container;
-use Chiron\Http\RequestContext;
-use Chiron\Http\ServerBag;
-use Chiron\Http\ParameterBag;
-use Chiron\Http\HeaderBag;
+use Chiron\Http\Request\RequestContext;
+use Chiron\Http\Request\Bag\ServerBag;
+use Chiron\Http\Request\Bag\ParameterBag;
+use Chiron\Http\Request\Bag\HeaderBag;
+use Chiron\Http\Request\Bag\FileBag;
 use Psr\Http\Message\ServerRequestInterface;
 use Nyholm\Psr7\UploadedFile;
 
@@ -45,31 +46,11 @@ class RequestContextTest extends TestCase
         $this->assertInstanceOf(ParameterBag::class, $this->context->data);
         $this->assertInstanceOf(ParameterBag::class, $this->context->cookies);
         $this->assertInstanceOf(ParameterBag::class, $this->context->query);
-        $this->assertInstanceOf(ParameterBag::class, $this->context->files);
+        $this->assertInstanceOf(FileBag::class, $this->context->files);
         $this->assertInstanceOf(HeaderBag::class, $this->context->headers);
-
-        $this->assertInstanceOf(ServerBag::class, $this->context->bag('server'));
-        $this->assertInstanceOf(ParameterBag::class, $this->context->bag('attributes'));
-        $this->assertInstanceOf(ParameterBag::class, $this->context->bag('data'));
-        $this->assertInstanceOf(ParameterBag::class, $this->context->bag('cookies'));
-        $this->assertInstanceOf(ParameterBag::class, $this->context->bag('query'));
-        $this->assertInstanceOf(ParameterBag::class, $this->context->bag('files'));
-        $this->assertInstanceOf(HeaderBag::class, $this->context->bag('headers'));
     }
 
     public function testWrongBag(): void
-    {
-        $request = new ServerRequest('GET', 'http://domain.com/hello-world');
-
-        $this->container->bind(ServerRequestInterface::class, $request);
-
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage("Undefined input bag 'invalid'");
-
-        $this->context->bag('invalid');
-    }
-
-    public function testWrongBagShortcut(): void
     {
         $request = new ServerRequest('GET', 'http://domain.com/hello-world');
 

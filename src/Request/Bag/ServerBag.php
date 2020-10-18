@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Http;
+namespace Chiron\Http\Request\Bag;
 
 /**
  * Access to server parameters of request, every requested key will be normalized for better

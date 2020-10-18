@@ -9,10 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Nyholm\Psr7\ServerRequest;
 use Chiron\Container\Container;
-use Chiron\Http\RequestContext;
-use Chiron\Http\ServerBag;
-use Chiron\Http\ParameterBag;
-use Chiron\Http\HeaderBag;
+use Chiron\Http\Request\Bag\ParameterBag;
 use Psr\Http\Message\ServerRequestInterface;
 
 // TODO : ajouter les tests pour la partie "ArrayAccess" !!!

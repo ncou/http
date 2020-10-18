@@ -37,7 +37,7 @@ use Psr\Http\Message\ResponseInterface;
 
 
 
-// TODO : externaliser la méthode pour définir la tailler du buffer, elle pourra être appeller dans un bootloader pour modifier cette valeur.
+// TODO : externaliser la méthode pour définir la tailler du buffer, elle pourra être appellée dans un bootloader pour modifier cette valeur.
 final class SapiEmitter
 {
     // TODO : créer une méthode statique dans la classe StatusCode::isEmpty($code) pour avec ce tableau là ? idem en créant une méthode isInformational($code) et isCacheable()...etc, en se basant sur les méthodes de symfony : https://github.com/symfony/symfony/blob/master/src/Symfony/Component/HttpFoundation/Response.php#L1217
@@ -47,6 +47,9 @@ final class SapiEmitter
     /** @var int default buffer size (8Mb) */
     // TODO : cette valeur est paramétrée dans le fichier http.php.dist et dans la classe HttpConfig il faudrait virer ces infos de ces 2 fichiers car c'est propre au sapi et pas à la configuration générale du module http !!!!
     private const DEFAULT_BUFFER_SIZE = 8 * 1024 * 1024;
+
+    /** @var int */
+    private $bufferSize;
 
     /**
      * Construct the Emitter, and define the chunk size used to emit the body.

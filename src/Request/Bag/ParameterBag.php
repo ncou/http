@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Http;
+namespace Chiron\Http\Request\Bag;
 
 use LogicException;
 use ArrayAccess;
