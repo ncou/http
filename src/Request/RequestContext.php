@@ -80,7 +80,7 @@ final class RequestContext implements SingletonInterface
      */
     public function getRequest(): ServerRequestInterface
     {
-        // ensure the request instance if fresh (get it from the container).
+        // ensure the request instance is fresh (get it from the container).
         $this->refreshRequestInstance();
 
         return $this->request;
