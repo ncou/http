@@ -77,12 +77,12 @@ trait RequestBagTrait
     private function bag(string $name): ParameterBag
     {
         if (! isset($this->bagsMapping[$name])) {
-            throw new \RuntimeException("Undefined input bag '{$name}'"); // TODO : lister les choix possible dans cette exception !!! Eventuellement remplacer cette exception par un InvalidArgumentException
+            throw new \RuntimeException("Undefined input bag '{$name}'"); // TODO : lister les choix possible dans cette exception !!! Eventuellement remplacer cette exception par un InvalidArgumentException.  exemple : throw new InvalidOptionsException(sprintf('The options "%s" do not exist in constraint "%s".', implode('", "', $invalidOptions), static::class), $invalidOptions);
         }
 
         $request = $this->getRequest();
         $method = $this->bagsMapping[$name]['source'];
-        // execute the method for the active request.
+        // Retrieve the request data.
         $data = call_user_func([$request, $method]);
 
         $class = $this->bagsMapping[$name]['class'];
