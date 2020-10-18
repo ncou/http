@@ -18,7 +18,6 @@ use Chiron\Http\Request\Bag\ServerBag;
 use Chiron\Http\Request\Bag\ParameterBag;
 use Chiron\Http\Request\Bag\HeaderBag;
 use Chiron\Http\Request\Bag\FileBag;
-use Chiron\Http\Request\Traits\RequestBagTrait;
 
 // Méthode pour détecter le "base_path" de l'application.
 //https://github.com/drupal/drupal/blob/9.0.x/core/lib/Drupal/Core/DrupalKernel.php#L1087

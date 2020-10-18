@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Http\Request\Traits;
+namespace Chiron\Http\Request;
 
 use Chiron\Container\SingletonInterface;
 use Chiron\Facade\HttpDecorator;
