@@ -16,6 +16,7 @@ final class RequestContext extends AbstractFacade
      */
     protected static function getFacadeAccessor(): string
     {
+        // phpcs:ignore SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedName
         return \Chiron\Http\Request\RequestContext::class;
     }
 }
