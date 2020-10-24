@@ -7,6 +7,12 @@ namespace Chiron\Http;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 
+//https://github.com/narrowspark/http-emitter/blob/9e61a16408c81e656050c0dfde641f641527a29c/src/SapiEmitter.php
+
+//https://github.com/ventoviro/windwalker-framework/blob/8b1aba30967dd0e6c4374aec0085783c3d0f88b4/src/Http/Output/Output.php
+
+//https://github.com/spiral/http/blob/master/src/Emitter/SapiEmitter.php
+
 //https://github.com/zendframework/zend-expressive-router/blob/master/src/Middleware/ImplicitHeadMiddleware.php
 //https://github.com/zendframework/zend-expressive-router/blob/e76e6abd277c73268d27d92f7b385991e86488b9/test/Middleware/ImplicitHeadMiddlewareTest.php
 
@@ -36,6 +42,7 @@ use Psr\Http\Message\ResponseInterface;
 // TODO : je me demande aussi si ce n'est pas le cas pour les request de type HEAD/TRACE/OPTIONS => https://github.com/amphp/aerys/blob/b47982604a64d8d49f7fc66cdbaf6940d97f3300/lib/Http1Driver.php#L298
 
 
+// TODO : créer un répertoire "Emitter" dans le package chiron/http et déplacer cette classe dans ce répertoire "Emitter" ????
 
 // TODO : externaliser la méthode pour définir la tailler du buffer, elle pourra être appellée dans un bootloader pour modifier cette valeur.
 final class SapiEmitter
@@ -166,7 +173,7 @@ final class SapiEmitter
     // https://github.com/yiisoft/yii-web/blob/master/src/SapiEmitter.php#L102
     private function isResponseEmpty(ResponseInterface $response): bool
     {
-        if (in_array($response->getStatusCode(), self::NO_BODY_RESPONSE_CODES, true)) {
+        if (in_array($response->getStatusCode(), self::NO_BODY_RESPONSE_CODES)) {
             return true;
         }
 

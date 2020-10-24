@@ -7,7 +7,7 @@ use Chiron\Http\Config\HttpConfig;
 use Chiron\Http\MiddlewareQueue;
 use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 
-final class HttpBootloader extends AbstractBootloader
+final class MiddlewareQueueBootloader extends AbstractBootloader
 {
     public function boot(MiddlewareQueue $middlewares, HttpConfig $config): void
     {

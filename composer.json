@@ -16,6 +16,7 @@
     },
     "require": {
         "php": "^7.2",
+        "chiron/http-message-util": "^1.0",
         "chiron/pipeline": "^3.5",
         "chiron/psr17factoryfinder": "^0.1",
         "nyholm/psr7-server": "^0.3"
@@ -43,7 +44,7 @@
             ],
             "bootloaders": [
                 "Chiron\\Http\\Bootloader\\PublishHttpBootloader",
-                "Chiron\\Http\\Bootloader\\HttpBootloader",
+                "Chiron\\Http\\Bootloader\\MiddlewareQueueBootloader",
                 "Chiron\\Http\\Bootloader\\SapiDispatcherBootloader"
             ]
         }
