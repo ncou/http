@@ -2,7 +2,7 @@
 
 namespace Chiron\Http\Bootloader;
 
-use Chiron\Bootload\AbstractBootloader;
+use Chiron\Core\Container\Bootloader\AbstractBootloader;
 use Chiron\Http\Config\HttpConfig;
 use Chiron\Http\MiddlewareQueue;
 use Chiron\Http\Middleware\ErrorHandlerMiddleware;

@@ -16,8 +16,7 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Provider;
 
-//use Chiron\Http\Middleware\ErrorHandlerMiddleware;
-use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
+use Chiron\Core\Container\Provider\ServiceProviderInterface;
 use Chiron\Container\BindingInterface;
 use Chiron\Container\Container;
 use Chiron\Http\Factory\ResponseFactory;
