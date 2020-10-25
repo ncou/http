@@ -8,7 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Chiron\Core\Support\Security;
+use Chiron\Security\Security;
 
 // TODO : permettre aussi au monolog processor de stocker cet id dans les logs :
 //https://github.com/php-middleware/request-id/tree/master/src
