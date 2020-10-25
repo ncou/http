@@ -10,6 +10,7 @@ use Chiron\Container\Container;
 
 final class SapiServerRequestCreator
 {
+    // TODO : stocker dans une variable static de classe l'instance de $creator, cela évitera de réinstancier cette classe via la méthode make X fois, on gagnera en utilisation mémoire.
     public static function fromGlobals(): ServerRequestInterface
     {
         // TODO : nettoyer le code, eventuellement faire une fonction globale make() qui crée automatiquement les classes dont le nom est passée en paramétre.

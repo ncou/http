@@ -13,10 +13,27 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use SplPriorityQueue;
 use Chiron\Container\BindingInterface;
+use OutOfBoundsException;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Container\ContainerInterface;
+use Chiron\Pipe\Decorator\Middleware\CallableMiddleware;
+use Chiron\Pipe\Decorator\Middleware\FixedResponseMiddleware;
+use Chiron\Pipe\Decorator\Middleware\LazyMiddleware;
+use Chiron\Pipe\Decorator\Middleware\RequestHandlerMiddleware;
+use Chiron\Pipe\Decorator\RequestHandler\CallableRequestHandler;
+use Chiron\Pipe\Decorator\RequestHandler\FixedResponseRequestHandler;
+use Chiron\Pipe\Decorator\RequestHandler\LazyRequestHandler;
+use InvalidArgumentException;
+use LogicException;
 
+
+//https://github.com/zendframework/zend-stdlib/blob/master/src/PriorityQueue.php
+//https://github.com/zendframework/zend-stdlib/blob/master/src/PriorityList.php
+
+//https://github.com/cakephp/cakephp/blob/master/src/Http/MiddlewareQueue.php
 //https://github.com/zendframework/zend-stdlib/blob/master/src/SplPriorityQueue.php
 
-// TODO : classe à déplacer dans le package chiron/pipeline ????
+// TODO : classe à déplacer dans le package chiron/pipeline ???? attention avec la référence vers SingletonInterface ca va merder car le package pipeline n'a pas de dépendance vers le chiron/container !!!!
 // TODO : code à nettoyer et à améliorer !!!!
 final class MiddlewareQueue extends SplPriorityQueue implements SingletonInterface
 {
@@ -39,6 +56,19 @@ final class MiddlewareQueue extends SplPriorityQueue implements SingletonInterfa
     // TODO : attention le @var est faux, pour l'instant la variuable $stack peut contenir des callable, des string...etc
     //private $queue;
 
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    /**
+     * @param ContainerInterface $container Used for the lazy loading decorator.
+     */
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
 /*
     public function __construct()
     {
@@ -46,6 +76,8 @@ final class MiddlewareQueue extends SplPriorityQueue implements SingletonInterfa
         $this->queue = new SplPriorityQueue();
     }
 */
+
+
 
     /**
      * Insert middleware in the queue with a given priority.
@@ -61,13 +93,55 @@ final class MiddlewareQueue extends SplPriorityQueue implements SingletonInterfa
     // TODO : remonter l'appel au HttpDecorator::toMiddleware() dans cette méthode ci dessous !!!!
     // TODO : ajouter une vérification pour ne pas insérer Xfois le même middleware, par contre si il y a une différence de priorité entre les 2 instertions c'est pas normal et donc il faudra lever une exception !!!! ou alors éventuellement remplacer automatiquement la priorité avec la plus élevée.
     // TODO : renommer la méthode en "insert()" car c'est une méthode définie dans l'objet pére SplPriorityQueue
-    public function addMiddleware($middleware, int $priority = self::PRIORITY_NORMAL): void//: self
+    public function addMiddleware($middleware, int $priority = self::PRIORITY_NORMAL): bool//: self
     {
-        parent::insert($middleware, [$priority, $this->serial--]);
+        $middleware = $this->prepare($middleware);
+        return parent::insert($middleware, [$priority, $this->serial--]);
 
         //return $this;
     }
 
+    public function insert($middleware, $priority = self::PRIORITY_NORMAL): bool//: self
+    {
+        /*
+        if (! is_array($priority)) {
+            $priority = [$priority, $this->serial--];
+        }*/
+
+        return $this->addMiddleware($middleware, (int) $priority);
+    }
+
+
+    private function prepare($middleware): MiddlewareInterface
+    {
+        if ($middleware instanceof MiddlewareInterface) {
+            return $middleware;
+        }
+
+        if ($middleware instanceof RequestHandlerInterface) {
+            return new RequestHandlerMiddleware($middleware);
+        }
+
+        if ($middleware instanceof ResponseInterface) {
+            return new FixedResponseMiddleware($middleware);
+        }
+
+        if (is_callable($middleware)) {
+            return new CallableMiddleware($middleware);
+        }
+
+        if (is_string($middleware) && $middleware !== '') {
+            return new LazyMiddleware($this->container, $middleware);
+        }
+
+        throw new InvalidArgumentException(sprintf(
+            'Middleware "%s" is neither a valid string service name, a PHP callable, or an instance of %s/%s/%s',
+            is_object($middleware) ? get_class($middleware) : gettype($middleware),
+            MiddlewareInterface::class,
+            ResponseInterface::class,
+            RequestHandlerInterface::class
+        ));
+    }
 
 
 
