@@ -6,46 +6,57 @@ namespace Chiron\Http;
 
 use Chiron\Container\SingletonInterface;
 use Chiron\Facade\HttpDecorator;
-use Chiron\Pipe\Pipeline;
-use Chiron\Routing\RoutingHandler;
+use Chiron\Http\Pipeline\Pipeline;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Chiron\Container\BindingInterface;
+use Chiron\Container\Container;
+use SplPriorityQueue;
+use Chiron\Pipeline\PipelineTrait;
 
-// TODO : classe à déplacer dans le package chiron/routing ????
 
-// https://github.com/cakephp/cakephp/blob/master/src/Http/Runner.php#L69
-//https://github.com/cakephp/cakephp/blob/master/src/Http/MiddlewareQueue.php
-
-// TODO : faire étendre cette classe de la classe Pipeline::class ????? ou fusionner le code ????
-// TODO : utiliser une SplPriorityQueue pour ajouter des middlewares dans cette classe ????
-// TODO : classe à renommer en HttpRunner ???? et ajouter une méthode run() qui effectue un reset de l'index à 0 et execute ensuite la méthode handle() [exemple : https://github.com/middlewares/utils/blob/master/src/Dispatcher.php#L44]
-// TODO : créer un constructeur et lui passer l'objet MiddlewareDecorator, et utiliser la méthode decorate de cette classe lorsqu'on ajoute un middleware au tableau.
-// TODO : renommer la classe en HttpRunner ou HttpKernel ou HttpHandler ou WebHandler
-final class Http implements RequestHandlerInterface
+final class Http implements RequestHandlerInterface, SingletonInterface
 {
-    /** @var BindingInterface */
-    private $binder;
-    /** @var Pipeline */
-    private $pipeline;
+    use PipelineTrait;
 
-    public function __construct(BindingInterface $binder, MiddlewareQueue $middlewares)
-    {
-        $this->binder = $binder;
-        $this->pipeline = new Pipeline($middlewares);
-    }
+    public const PRIORITY_MAX = 300;
+    public const PRIORITY_HIGH = 200;
+    public const PRIORITY_ABOVE_NORMAL = 100;
+    public const PRIORITY_NORMAL = 0;
+    public const PRIORITY_BELOW_NORMAL = -100;
+    public const PRIORITY_LOW = -200;
+    public const PRIORITY_MIN = -300;
 
+    /** @ver Container */
+    private $container;
     /**
-     * @return Pipeline
+     * @var int Seed used to ensure queue order for items of the same priority
      */
-    public function getPipeline(): Pipeline
+    private $serial = PHP_INT_MAX;
+
+    public function __construct(Container $container)
     {
-        return $this->pipeline;
+        $this->container = $container;
+        $this->middlewares = new SplPriorityQueue();
+    }
+
+    public function addMiddleware($middleware, int $priority = self::PRIORITY_NORMAL): void
+    {
+        // Try to resolve the middleware by using the container.
+        $middleware = $this->resolveMiddleware($middleware);
+        // Use a priority int value during the middleware insertion in the queue.
+        $this->middlewares->insert($middleware, [$priority, $this->serial--]);
+    }
+
+    public function setHandler($handler): void
+    {
+        // Try to resolve the handler by using the container.
+        $this->handler = $this->resolveHandler($handler);
     }
 
     /**
-     * Execute the middleware queue.
+     * Use the Pipeline to iterate a queue of middlewares & handler and execute them.
      *
      * @param ServerRequestInterface $request
      *
@@ -53,19 +64,6 @@ final class Http implements RequestHandlerInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $this->bindRequestInstance($request);
-
-        return $this->pipeline->handle($request);
-    }
-
-    /**
-     * Store a "fresh" Request instance in the container.
-     *
-     * @param ServerRequestInterface $request
-     */
-    private function bindRequestInstance(ServerRequestInterface $request): void
-    {
-        // Requests are considered immutable, so a simple "bind()" is enough.
-        $this->binder->bind(ServerRequestInterface::class, $request);
+        return $this->getPipeline()->handle($request);
     }
 }

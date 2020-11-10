@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Http;
 
-use Chiron\ErrorHandler\ErrorHandler;
+use Chiron\ErrorHandler\HttpErrorHandler;
 use Chiron\Core\Dispatcher\AbstractDispatcher;
 use Chiron\Http\SapiServerRequestCreator;
 use Chiron\Http\Http;
@@ -26,7 +26,7 @@ final class SapiDispatcher extends AbstractDispatcher
      * @param ErrorHandler $errorHandler
      */
     // TODO : utiliser plutot un ErrorHandlerInterface au lieu de l'objet ErrorHandler !!!!
-    protected function perform(Http $http, SapiEmitter $emitter, ErrorHandler $errorHandler): void
+    protected function perform(Http $http, SapiEmitter $emitter, HttpErrorHandler $errorHandler): void
     {
         $request = SapiServerRequestCreator::fromGlobals();
 

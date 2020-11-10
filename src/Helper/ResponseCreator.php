@@ -16,6 +16,7 @@ use RuntimeException;
 
 //https://github.com/laravel/framework/blob/7.x/src/Illuminate/Routing/ResponseFactory.php
 
+// TODO : utiliser cette classe dans le RouteCollector lorsqu'on créé une redirection ou qu'on utiliser la fonction ->view() pour charger une page.
 final class ResponseCreator
 {
     /** @var ResponseFactoryInterface */

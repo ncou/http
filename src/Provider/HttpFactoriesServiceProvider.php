@@ -34,7 +34,7 @@ use Psr\Http\Message\UriFactoryInterface;
 class HttpFactoriesServiceProvider implements ServiceProviderInterface
 {
     /**
-     * Register Chiron system services.
+     * Register Chiron http factories services.
      *
      * @param Container $container A DI container implementing ArrayAccess and container-interop.
      */
