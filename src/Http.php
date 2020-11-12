@@ -15,7 +15,6 @@ use Chiron\Container\Container;
 use SplPriorityQueue;
 use Chiron\Pipeline\PipelineTrait;
 
-
 final class Http implements RequestHandlerInterface, SingletonInterface
 {
     use PipelineTrait;
@@ -41,6 +40,7 @@ final class Http implements RequestHandlerInterface, SingletonInterface
         $this->middlewares = new SplPriorityQueue();
     }
 
+    // TODO : ajouter le typehint des paramétres de cette fonction !!!
     public function addMiddleware($middleware, int $priority = self::PRIORITY_NORMAL): void
     {
         // Try to resolve the middleware by using the container.
@@ -49,6 +49,7 @@ final class Http implements RequestHandlerInterface, SingletonInterface
         $this->middlewares->insert($middleware, [$priority, $this->serial--]);
     }
 
+    // TODO : ajouter le typehint des paramétres de cette fonction !!!
     public function setHandler($handler): void
     {
         // Try to resolve the handler by using the container.

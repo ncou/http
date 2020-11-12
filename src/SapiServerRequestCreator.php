@@ -16,7 +16,7 @@ final class SapiServerRequestCreator
         // TODO : nettoyer le code, eventuellement faire une fonction globale make() qui crée automatiquement les classes dont le nom est passée en paramétre.
         // TODO : eventuellement faire en sorte que si on appel juste container() sans paramétre cela retourne l'instance courrante du container !!!
         $container = Container::$instance;
-        $creator = $container->make(ServerRequestCreator::class);
+        $creator = $container->make(ServerRequestCreator::class); // TODO : il doit exister une méthode resolve() qui est globale et doit utiliser le container pour effectuer un make. il faudrait utiliser cette fonction pour rendre le code plus propre !!!
 
         return $creator->fromGlobals();
     }
