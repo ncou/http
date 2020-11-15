@@ -17,29 +17,31 @@ use Chiron\Http\Request\Bag\FileBag;
 use Psr\Http\Message\ServerRequestInterface;
 use Nyholm\Psr7\UploadedFile;
 
-// TODO : créer une méthode privée createRequest() qui se charge de retourner un ServerRequestInterface !!!!
 class RequestContextTest extends TestCase
 {
     /**
      * @var Container
      */
     private $container;
-
     /**
      * @var RequestContext
      */
     private $context;
+    /**
+     * @var ServerRequestInterface
+     */
+    private $request;
 
     public function setUp(): void
     {
         $this->container = new Container();
         $this->context = new RequestContext($this->container);
+        $this->request = new ServerRequest('GET', 'http://domain.com/hello-world');
     }
 
     public function testGetBag(): void
     {
-        $request = new ServerRequest('GET', 'http://domain.com/hello-world');
-        $this->container->bind(ServerRequestInterface::class, $request);
+        $this->container->bind(ServerRequestInterface::class, $this->request);
 
         $this->assertInstanceOf(ServerBag::class, $this->context->server);
         $this->assertInstanceOf(ParameterBag::class, $this->context->attributes);
@@ -52,9 +54,7 @@ class RequestContextTest extends TestCase
 
     public function testWrongBag(): void
     {
-        $request = new ServerRequest('GET', 'http://domain.com/hello-world');
-
-        $this->container->bind(ServerRequestInterface::class, $request);
+        $this->container->bind(ServerRequestInterface::class, $this->request);
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage("Undefined input bag 'invalid'");
@@ -65,8 +65,7 @@ class RequestContextTest extends TestCase
 
     public function testParameterBagShortcuts(): void
     {
-        $request = new ServerRequest('GET', 'http://domain.com/hello-world');
-        $request = $request->withParsedBody([
+        $request = $this->request->withParsedBody([
             'user' => 'foobar',
             'name'  => 'xx'
         ])->withQueryParams([
@@ -100,8 +99,7 @@ class RequestContextTest extends TestCase
                 __FILE__
             );
 
-        $request = new ServerRequest('GET', 'http://domain.com/hello-world');
-        $request = $request->withUploadedFiles([
+        $request = $this->request->withUploadedFiles([
             'my_file' => $file
         ]);
 

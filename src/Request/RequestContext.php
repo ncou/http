@@ -93,7 +93,7 @@ final class RequestContext implements SingletonInterface
     private function refreshRequestInstance(): void
     {
         try {
-            $this->request = $this->container->get(ServerRequestInterface::class);
+            $this->request = $this->container->get(ServerRequestInterface::class); // externaliser cet appel dans une fonction globale du genre get_request() ou current_request()
         } catch (NotFoundExceptionInterface $e) {
             throw new ScopeException(
                 'Unable to get "ServerRequestInterface" in active container scope.',
