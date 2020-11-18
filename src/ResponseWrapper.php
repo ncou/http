@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Http\Factory;
+namespace Chiron\Http;
 
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -12,10 +12,12 @@ use Psr\Http\Message\ResponseInterface;
 //https://github.com/zendframework/zend-http/blob/9812b6e14b8e94ac0bfaece955bc863df2fcf309/src/Header/ContentType.php
 //https://github.com/zendframework/zend-mail/blob/ece418b37aaf8a98c991d7f0c198408043a2172d/src/Header/ContentType.php
 
+// TODO : renommer cette classe en ResponseWrapper::class et la mettre à la racine du package chiron/http
+
 /**
  * Wrapper for the PSR17 ResponseFactory to inject some default headers.
  */
-final class ResponseFactory implements ResponseFactoryInterface
+final class ResponseWrapper implements ResponseFactoryInterface
 {
     /** @var ResponseFactoryInterface */
     private $factory;

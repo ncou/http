@@ -13,7 +13,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Chiron\Container\BindingInterface;
 use Chiron\Container\Container;
 use SplPriorityQueue;
-use Chiron\Pipeline\PipelineTrait;
+use Chiron\Http\Traits\PipelineTrait;
 
 final class Http implements RequestHandlerInterface, SingletonInterface
 {

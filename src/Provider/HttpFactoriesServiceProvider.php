@@ -19,7 +19,7 @@ namespace Chiron\Http\Provider;
 use Chiron\Core\Container\Provider\ServiceProviderInterface;
 use Chiron\Container\BindingInterface;
 use Chiron\Container\Container;
-use Chiron\Http\Factory\ResponseFactory;
+use Chiron\Http\ResponseWrapper;
 use Http\Factory\Psr17FactoryFinder;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -45,7 +45,7 @@ class HttpFactoriesServiceProvider implements ServiceProviderInterface
             $factory = Psr17FactoryFinder::findResponseFactory();
             $headers = []; // TODO : aller rechercher dans la classe httpConfig les headers de base à injecter dans la réponse.
 
-            return new ResponseFactory($factory, $headers);
+            return new ResponseWrapper($factory, $headers);
         });
 
         $container->bind(RequestFactoryInterface::class, [Psr17FactoryFinder::class, 'findRequestFactory']);
