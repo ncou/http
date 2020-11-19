@@ -18,7 +18,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Chiron\Http\Message\RequestMethod;
 
-class OptionMethodMiddleware implements MiddlewareInterface
+class OptionsMethodMiddleware implements MiddlewareInterface
 {
     /** @var ResponseFactoryInterface */
     private $responseFactory;
