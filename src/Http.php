@@ -27,11 +27,9 @@ final class Http implements RequestHandlerInterface, SingletonInterface
     public const PRIORITY_LOW = -200;
     public const PRIORITY_MIN = -300;
 
-    /** @ver Container */
+    /** @var Container */
     private $container;
-    /**
-     * @var int Seed used to ensure queue order for items of the same priority
-     */
+    /** @var int Seed used to ensure queue order for items of the same priority */
     private $serial = PHP_INT_MAX;
 
     public function __construct(Container $container)
@@ -57,7 +55,7 @@ final class Http implements RequestHandlerInterface, SingletonInterface
     }
 
     /**
-     * Use the Pipeline to iterate a queue of middlewares & handler and execute them.
+     * Use the Pipeline to iterate on a queue of middlewares/handler and execute them.
      *
      * @param ServerRequestInterface $request
      *

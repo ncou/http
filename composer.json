@@ -16,12 +16,11 @@
     },
     "require": {
         "php": "^7.2",
-        "chiron/container": "^3.6",
+        "chiron/core": "^1.0",
         "chiron/pipeline": "^3.5",
         "chiron/http-message-util": "^1.0",
         "chiron/http-exceptions": "^2.0",
-        "chiron/psr17factoryfinder": "^0.1",
-        "nyholm/psr7-server": "^0.3"
+        "chiron/psr17factoryfinder": "^0.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.0",
@@ -45,8 +44,7 @@
             ],
             "bootloaders": [
                 "Chiron\\Http\\Bootloader\\PublishHttpBootloader",
-                "Chiron\\Http\\Bootloader\\HttpBootloader",
-                "Chiron\\Http\\Bootloader\\SapiDispatcherBootloader"
+                "Chiron\\Http\\Bootloader\\HttpBootloader"
             ]
         }
     }

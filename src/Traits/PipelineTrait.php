@@ -10,13 +10,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Chiron\Pipeline\Pipeline;
 use InvalidArgumentException;
 
-// TODO : mettre cette classe dans un répertoire "Traits" ????
 // TODO : passer les attributs et les méthodes en private ???
 
-// TODO : déplacer la classe PipelineTrait et CallableHandler dans le package chiron/http (respectivement dans un sous répertoire xxx/Traits et xxx/Handler)
-
 /**
- * The "container" should be defined in the class to use this pipeline trait.
+ * The "container" attribute should be defined in the class to use this pipeline trait.
  */
 trait PipelineTrait
 {

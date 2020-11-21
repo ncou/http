@@ -73,7 +73,7 @@ class CallableHandler implements RequestHandlerInterface, ContainerAwareInterfac
         } catch (InvocationException $e) {
             // TODO : améliorer le code pour permettre de passer en paramétre l'exception précédente ($e) à cette http exception
             // TODO : il faudrait surement lever une exception NotFoundHttpException dans le cas ou la mathode du callable n'existe pas dans la classe du callable, mais il faut pour cela séparer ce type d'exception dans la classe Injector pour ne pas remonter systématiquement une Exception InvocationException qui gére à la fois les probléme de callable qui n'existent pas et les callables qui n'ont pas le bon nombre d'arguments en paramétres.
-            throw new BadRequestHttpException(); // TODO : attention on ajoute une exception du package chiron/http-exceptions dans le package chiron/pipeline ce n'est pas trés cloisonné comme conception !!!
+            throw new BadRequestHttpException();
         }
 
         // TODO : il faudrait réussir via la reflexion à récupérer la ligne php ou se trouve le callable et utiliser ce file/line dans l'exception, ca serait plus simple à débugger !!! ou à minima si c'est un tableau on affiche le détail du tableau (qui sera au format, [class, 'method'])
