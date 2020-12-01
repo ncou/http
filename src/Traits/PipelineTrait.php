@@ -24,6 +24,8 @@ trait PipelineTrait
     /** @ver iterable<MiddlewareInterface> */
     protected $middlewares = [];
 
+    // TODO : ajouter le typehint pour le paramétre de cette fonction !!!!
+    // TODO : il faudrait pas ajouter un mécanisme pour éviter les doublons lorsqu'on ajoute un middleware ???? en vérifiant le get_class par exemple.
     protected function resolveMiddleware($middleware): MiddlewareInterface
     {
         if (is_string($middleware)) {
@@ -43,6 +45,7 @@ trait PipelineTrait
         ));
     }
 
+    // TODO : ajouter le typehint pour le paramétre de cette fonction !!!!
     protected function resolveHandler($handler): RequestHandlerInterface
     {
         if (is_string($handler)) {

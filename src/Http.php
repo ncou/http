@@ -39,6 +39,7 @@ final class Http implements RequestHandlerInterface, SingletonInterface
     }
 
     // TODO : ajouter le typehint des paramétres de cette fonction !!!
+    // TODO : il faudrait pas ajouter un mécanisme pour éviter les doublons lorsqu'on ajoute un middleware ???? en vérifiant le get_class par exemple.
     public function addMiddleware($middleware, int $priority = self::PRIORITY_NORMAL): void
     {
         // Try to resolve the middleware by using the container.
