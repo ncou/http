@@ -17,19 +17,19 @@ final class HttpConfig extends AbstractInjectableConfig
     {
         return Expect::structure([
             // TODO : à virer on utilisera un service provider pour modifier la création de l'object et donc changer le constructeur.
-            'bufferSize'        => Expect::int()->default(8 * 1024 * 1024),
-            'protocol'          => Expect::string()->default('1.1'),
+            'buffer_size'      => Expect::int()->default(8 * 1024 * 1024),
+            'protocol'         => Expect::string()->default('1.1'),
             // TODO : champ à déplacer dans un fichier "routing.php" ???? car c'est pas vraiment un paramétrage du protocol http !!!!
-            'basePath'          => Expect::string()->default('/'),
-            'headers'           => Expect::arrayOf('string')->assert([Validator::class, 'isArrayAssociative'], 'associative array'),
-            'middlewares'       => Expect::listOf('string'),
-            'handle_exception'  => Expect::bool()->default(true),
+            'base_path'        => Expect::string()->default('/'),
+            'headers'          => Expect::arrayOf('string')->assert([Validator::class, 'isArrayAssociative'], 'associative array'),
+            'middlewares'      => Expect::listOf('string'),
+            'handle_exception' => Expect::bool()->default(true),
         ]);
     }
 
     public function getBufferSize(): int
     {
-        return $this->get('bufferSize');
+        return $this->get('buffer_size');
     }
 
     public function getProtocol(): string
@@ -39,7 +39,7 @@ final class HttpConfig extends AbstractInjectableConfig
 
     public function getBasePath(): string
     {
-        return $this->get('basePath');
+        return $this->get('base_path');
     }
 
     public function getHeaders(): array

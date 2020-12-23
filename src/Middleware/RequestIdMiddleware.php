@@ -8,7 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Chiron\Security\Security;
+use Chiron\Security\Support\Random;
 
 // TODO : permettre aussi au monolog processor de stocker cet id dans les logs :
 //https://github.com/php-middleware/request-id/tree/master/src
@@ -42,7 +42,7 @@ final class RequestIdMiddleware implements MiddlewareInterface
         // TODO : il faudrait plutot faire un if (! $request->hasHeader(xxx)) plutot que le test avec empty
         // TODO : le $id sera un tableau vide si il n'existe pas.
         if (empty($id)) {
-            $id = Security::uuid();
+            $id = Random::uuid();
             $request = $request->withHeader(self::HEADER_NAME, $id);
         }
 
