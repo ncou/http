@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
+use Chiron\Security\Support\Random;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Chiron\Security\Support\Random;
 
 // TODO : permettre aussi au monolog processor de stocker cet id dans les logs :
 //https://github.com/php-middleware/request-id/tree/master/src

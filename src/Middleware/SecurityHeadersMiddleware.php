@@ -1,12 +1,11 @@
 <?php
+
 /**
  * Chiron Framework.
  *
  * @see      https://github.com/ncou/Chiron
- *
- * @copyright Copyright (c) 2017-2018 ncou
- * @license   https://github.com/ncou/Chiron/blob/master/LICENSE.md (MIT License)
  */
+
 declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;

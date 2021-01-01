@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Traits;
 
-use Psr\Http\Server\MiddlewareInterface;
 use Chiron\Http\CallableHandler;
-use Psr\Http\Server\RequestHandlerInterface;
 use Chiron\Pipeline\Pipeline;
 use InvalidArgumentException;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 // TODO : passer les attributs et les méthodes en private ???
 

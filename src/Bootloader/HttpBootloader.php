@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Chiron\Http\Bootloader;
 
 use Chiron\Core\Container\Bootloader\AbstractBootloader;

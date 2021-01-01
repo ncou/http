@@ -11,12 +11,12 @@ namespace Chiron\Http\Middleware;
 //https://github.com/mezzio/mezzio-router/blob/3.2.x/src/Middleware/ImplicitOptionsMiddleware.php
 
 use Chiron\Http\Exception\Client\MethodNotAllowedHttpException;
+use Chiron\Http\Message\RequestMethod;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Chiron\Http\Message\RequestMethod;
 
 class OptionsMethodMiddleware implements MiddlewareInterface
 {
@@ -45,7 +45,7 @@ class OptionsMethodMiddleware implements MiddlewareInterface
             if ($request->getMethod() === RequestMethod::OPTIONS) {
                 // TODO : créer une méthode getAllowedMethods() dans la class MethodNotAllowedHttpException.
                 // TODO : vérifier si il n'est pas possible de forcer le code à 200 au lieu de 405 dans le cas de cette erreur !!! comme ca c'est le middleware ErrorHandler qui se chargera de créer la réponse.
-                return ($this->responseFactory->createResponse())->withHeader('Allow', $exception->getHeaders()['Allow']);
+                return $this->responseFactory->createResponse()->withHeader('Allow', $exception->getHeaders()['Allow']);
             }
 
             throw $exception;

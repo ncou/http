@@ -70,7 +70,6 @@ declare(strict_types=1);
 namespace Chiron\Http\Middleware;
 
 use Chiron\ErrorHandler\ErrorManager;
-use Chiron\Http\Psr\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;

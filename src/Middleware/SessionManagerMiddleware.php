@@ -17,18 +17,18 @@ class SessionManagerMiddleware implements MiddlewareInterface
     /** @var array Default settings */
     protected $settings = [
         // Session cookie settings
-        'name'           => 'CHRSESSIONID',
+        'name'          => 'CHRSESSIONID',
         // session lifetime in seconds
-        'lifetime'       => 30 * 60,
-        'path'           => '/',
-        'domain'         => null,
-        'secure'         => false,
-        'httponly'       => true,
+        'lifetime'      => 30 * 60,
+        'path'          => '/',
+        'domain'        => null,
+        'secure'        => false,
+        'httponly'      => true,
         // Path where session files are stored, PHP's default path will be used if set null
-        'save_path'      => null,
+        'save_path'     => null,
         // Session cache limiter
         // TODO : on devait aussi le passer à null pour s'assurer que PHP utilise la valeur définie par défaut dans le fichier ini
-        'cache_limiter'  => 'nocache',
+        'cache_limiter' => 'nocache',
     ];
 
     /**

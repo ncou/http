@@ -11,12 +11,12 @@ namespace Chiron\Http\Middleware;
 //https://github.com/mezzio/mezzio-router/blob/3.2.x/src/Middleware/ImplicitHeadMiddleware.php
 
 //use Chiron\Http\Psr\Response;
+use Chiron\Http\Message\RequestMethod;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Chiron\Http\Message\RequestMethod;
 
 /**
  * This middleware is enforce compliance with RFC 2616, Section 9.

@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace Chiron\Http;
 
+use Chiron\Container\Container;
 use Chiron\Container\SingletonInterface;
-use Chiron\Facade\HttpDecorator;
-use Chiron\Http\Pipeline\Pipeline;
+use Chiron\Http\Traits\PipelineTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Chiron\Container\BindingInterface;
-use Chiron\Container\Container;
 use SplPriorityQueue;
-use Chiron\Http\Traits\PipelineTrait;
 
 final class Http implements RequestHandlerInterface, SingletonInterface
 {

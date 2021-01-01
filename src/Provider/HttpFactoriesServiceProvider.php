@@ -4,8 +4,6 @@
  * Chiron (http://www.chironframework.com).
  *
  * @see      https://github.com/ncou/Chiron
- *
- * @license   https://github.com/ncou/Chiron/blob/master/licenses/LICENSE.md (MIT License)
  */
 
 //https://github.com/php-services/http-factory-nyholm/blob/master/src/NyholmHttpFactoryServiceProvider.php
@@ -16,9 +14,9 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Provider;
 
-use Chiron\Core\Container\Provider\ServiceProviderInterface;
 use Chiron\Container\BindingInterface;
 use Chiron\Container\Container;
+use Chiron\Core\Container\Provider\ServiceProviderInterface;
 use Chiron\Http\ResponseWrapper;
 use Http\Factory\Psr17FactoryFinder;
 use Psr\Http\Message\RequestFactoryInterface;

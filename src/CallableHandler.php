@@ -4,18 +4,14 @@ declare(strict_types=1);
 
 namespace Chiron\Http;
 
+use Chiron\Container\ContainerAwareInterface;
+use Chiron\Container\ContainerAwareTrait;
+use Chiron\Http\Exception\Client\BadRequestHttpException;
+use Chiron\Injector\Exception\InvocationException;
 use LogicException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Chiron\Container\Container;
-use Chiron\Injector\Injector;
-use Chiron\Injector\Exception\InvocationException;
-use Chiron\Http\Exception\Client\BadRequestHttpException;
-use JsonSerializable;
-use UnexpectedValueException;
-use Chiron\Container\ContainerAwareTrait;
-use Chiron\Container\ContainerAwareInterface;
 
 // TODO : mieux gérer les exceptions dans le cas ou il y a une erreur lors du $injector->call()    exemple :   https://github.com/spiral/framework/blob/e63b9218501ce882e661acac284b7167b79da30a/src/Hmvc/src/AbstractCore.php#L67       +         https://github.com/spiral/framework/blob/master/src/Router/src/CoreHandler.php#L199
 
