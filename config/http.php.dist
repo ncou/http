@@ -1,15 +1,48 @@
 <?php
 
-declare(strict_types=1);
-
+// TODO : ajouter un champ default_charset => 'utf-8' qui sera ajouter automatiquement à la création d'une response dans le header content-type
 return [
-    'bufferSize'        => 8 * 1024 * 1024,
-    'protocol'          => '1.1',
+    'buffer_size'      => 8 * 1024 * 1024,
+    'protocol'         => '1.1',
     //The base URL path of the Chiron installation. Will usually be "/" unless you have installed Chiron in a sub-directory.
-    'basePath'          => '/',
-    'headers'           => [],
-    'middlewares'       => [],
-    'handle_exception'  => true,
-    //'headers'           => ['Content-Type' => 'text/html; charset=UTF-8'],
-    //'middlewares'       => [Chiron\Http\Middleware\ErrorHandlerMiddleware::class, Chiron\Http\Middleware\CheckMaintenanceMiddleware::class],
+    'base_path'        => '/',
+    'headers'          => [], // TODO : renommer en default_headers
+    'middlewares'      => [],
+    'handle_exception' => true,
+    //'headers'         => ['Content-Type' => 'text/html; charset=UTF-8'],
+    //'middlewares'     => [Chiron\Http\Middleware\ErrorHandlerMiddleware::class, Chiron\Http\Middleware\CheckMaintenanceMiddleware::class],
+    /*
+    |--------------------------------------------------------------------------
+    | Trusted Hosts - Prevent DNS Rebinding attacks
+    |--------------------------------------------------------------------------
+    | Default: [] (localhost value is automaticaly added if Debug is enabled)
+    |
+    | If you set settings.DEBUG to 'False', you also need to properly set
+    | the http.ALLOWED_HOSTS setting. Else an Exception will be thrown!
+    */
+    # Hosts/domain names that are valid for this site.
+    # "*" matches anything, ".example.com" matches example.com and all subdomains
+    'allowed_hosts'    => [], // TODO : il faudra surement ajouter un truc du genre 'allowed_hosts => (array) env(APP_URL, null)' pour ajouter le host pas défaut du site en le castant en tableau et si la valeur n'est pas trouvée, null sera casté en tableau vide. pour APP_URL cf le domain initialisé dans le cookie.php.dist.
+
+    # List of regular expression representing User-Agent strings that are
+    # not allowed to visit any page, systemwide. Use this for bad
+    # robots/crawlers. Here are a few examples:
+    #     disallowed_user_agents = [
+    #         '/^NaverBot.*/',
+    #         '/^EmailSiphon.*/',
+    #         '/^SiteSucker.*/',
+    #         '/^sohu-search/',
+    #     ]
+    'disallowed_user_agents' => [],
+
+
+    # Whether to append trailing slashes to URLs.
+    //APPEND_SLASH = True
+
+    # Whether to prepend the "www." subdomain to URLs that don't have it.
+    //PREPEND_WWW = False
+
+    # Default charset to use for all HttpResponse objects, if a MIME type isn't
+    # manually specified. It's used to construct the Content-Type header.
+    //DEFAULT_CHARSET = 'utf-8'
 ];

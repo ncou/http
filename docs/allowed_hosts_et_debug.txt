@@ -1,0 +1,43 @@
+https://github.com/django/django/blob/5fcfe5361e5b8c9738b1ee4c1e9a6f293a7dda40/docs/howto/deployment/checklist.txt
+
+
+
+:setting:`DEBUG`
+----------------
+
+**You must never enable debug in production.**
+
+You're certainly developing your project with :setting:`DEBUG = True <DEBUG>`,
+since this enables handy features like full tracebacks in your browser.
+
+For a production environment, though, this is a really bad idea, because it
+leaks lots of information about your project: excerpts of your source code,
+local variables, settings, libraries used, etc.
+
+Environment-specific settings
+=============================
+
+:setting:`ALLOWED_HOSTS`
+------------------------
+
+When :setting:`DEBUG = False <DEBUG>`, Django doesn't work at all without a
+suitable value for :setting:`ALLOWED_HOSTS`.
+
+This setting is required to protect your site against some CSRF attacks. If
+you use a wildcard, you must perform your own validation of the ``Host`` HTTP
+header, or otherwise ensure that you aren't vulnerable to this category of
+attacks.
+
+You should also configure the Web server that sits in front of Django to
+validate the host. It should respond with a static error page or ignore
+requests for incorrect hosts instead of forwarding the request to Django. This
+way you'll avoid spurious errors in your Django logs (or emails if you have
+error reporting configured that way). For example, on nginx you might setup a
+default server to return "444 No Response" on an unrecognized host:
+
+.. code-block:: nginx
+
+    server {
+        listen 80 default_server;
+        return 444;
+    }

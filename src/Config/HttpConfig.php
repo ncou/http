@@ -24,6 +24,8 @@ final class HttpConfig extends AbstractInjectableConfig
             'headers'          => Expect::arrayOf('string')->assert([Validator::class, 'isArrayAssociative'], 'associative array'),
             'middlewares'      => Expect::listOf('string'),
             'handle_exception' => Expect::bool()->default(true),
+            'allowed_hosts'    => Expect::listOf('string'),
+            'disallowed_user_agents' => Expect::listOf('string'),
         ]);
     }
 
@@ -55,5 +57,15 @@ final class HttpConfig extends AbstractInjectableConfig
     public function getHandleException(): bool
     {
         return $this->get('handle_exception');
+    }
+
+    public function getAllowedHosts(): array
+    {
+        return $this->get('allowed_hosts');
+    }
+
+    public function getDisallowedUserAgents(): array
+    {
+        return $this->get('disallowed_user_agents');
     }
 }
