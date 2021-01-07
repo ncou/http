@@ -20,6 +20,7 @@
         "chiron/pipeline": "^3.5",
         "chiron/http-message-util": "^1.0",
         "chiron/http-exceptions": "^2.0",
+        "chiron/http-error-handler": "^1.0",
         "chiron/psr17factoryfinder": "^0.1"
     },
     "require-dev": {

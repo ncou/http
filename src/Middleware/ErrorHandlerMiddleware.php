@@ -69,14 +69,14 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-use Chiron\ErrorHandler\ErrorManager;
+use Chiron\Http\ErrorHandler\ErrorManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
 
-// TODO : déplacer le middleware de gestion des Errors ErrorHandlerMiddleware dans le répertoire "ErrorHandler"
+// TODO : déplacer ce middleware de gestion des errors dans le package "chiron/http-error-handler" ???? <=== NON !!!!
 final class ErrorHandlerMiddleware implements MiddlewareInterface
 {
     /**

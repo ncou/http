@@ -9,7 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Chiron\Http\Support\Uri;
-use Chiron\Config\SettingsConfig;
+use Chiron\Core\Config\SettingsConfig;
 use Chiron\Http\Config\HttpConfig;
 use Chiron\Http\Exception\DisallowedHostException;
 

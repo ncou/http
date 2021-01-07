@@ -6,7 +6,7 @@ namespace Chiron\Http\Bootloader;
 
 use Chiron\Core\Container\Bootloader\AbstractBootloader;
 use Chiron\Http\Config\HttpConfig;
-use Chiron\Config\SettingsConfig;
+use Chiron\Core\Config\SettingsConfig;
 use Chiron\Http\Http;
 use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Http\Middleware\AllowedHostsMiddleware;
