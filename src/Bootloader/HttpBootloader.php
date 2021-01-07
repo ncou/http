@@ -27,7 +27,8 @@ final class HttpBootloader extends AbstractBootloader
         // assert the allowed hosts list is not empty, because the site will not work !
         if ($config->getAllowedHosts() === [] && $settings->isDebug() === false) {
             // TODO : créer une ImproperlyConfiguredException ou une BadConfigurationException ou une ConfigurationException dans le package chiron/core qui étendra de l'exception mére : BootException
-            throw new BootException('http.ALLOWED_HOSTS list must not be empty in deployment.');
+            // TODO : code désactivé temporairement car lors de l'installation de l'application, comme on n'a pas encore de fichier .env le debug est mis par défaut à false !!!
+            //throw new BootException('http.ALLOWED_HOSTS list must not be empty in deployment.');
         }
 
         // add the defined middlewares with default priority.
