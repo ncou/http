@@ -16,7 +16,13 @@ final class DisallowedHostException extends SuspiciousOperationException
     public function __construct(string $host)
     {
         // TODO : utiliser simplement le message suivant : 'HTTP_HOST header contains invalid value' car c'est un message qui sera affiché à l'utilisateur dans son naviagateur donc inutile de lui donner trop d'information sur le fonctionnement interne de l'application !!!!
-        $detail = sprintf('Invalid Host header "%s". You may need to add this value to http.ALLOWED_HOSTS', $host);
+        $detail = sprintf('Untrusted Host header "%s".', $host);
+
+        if ($host === '') {
+            $detail .= ' The domain name provided is not valid according to RFC 1034/1035.';
+        } else {
+            $detail .= ' You may need to add this value to http.ALLOWED_HOSTS.';
+        }
 
         parent::__construct($detail);
     }

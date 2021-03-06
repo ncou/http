@@ -22,7 +22,7 @@ final class HttpConfig extends AbstractInjectableConfig
             // TODO : champ à déplacer dans un fichier "routing.php" ???? car c'est pas vraiment un paramétrage du protocol http !!!!
             'base_path'        => Expect::string()->default('/'),
             'headers'          => Expect::arrayOf('string')->assert([Validator::class, 'isArrayAssociative'], 'associative array'),
-            'middlewares'      => Expect::listOf('string'),
+            'middlewares'      => Expect::array(), // TODO : vérifier que la valeur est une string ou un objet de type MiddlewareBinding. Et je pense qu'on pourrait aussi lui passer une instance d'un MiddlewareInterface !!!!
             'handle_exception' => Expect::bool()->default(true),
             'allowed_hosts'    => Expect::listOf('string'),
             'disallowed_user_agents' => Expect::listOf('string'),

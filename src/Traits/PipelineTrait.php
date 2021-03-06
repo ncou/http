@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Http\Traits;
 
 use Chiron\Http\CallableHandler;
+use Chiron\Http\Middleware\MiddlewareBinding;
 use Chiron\Pipeline\Pipeline;
 use InvalidArgumentException;
 use Psr\Http\Server\MiddlewareInterface;
@@ -31,6 +32,12 @@ trait PipelineTrait
         if (is_string($middleware)) {
             // TODO : faire un catch de l'exception ContainerNotFoundException pour retourner une InvalidArgument ou PipelineException avec le message 'the string parameter is not a valid service name' ????
             $middleware = $this->container->get($middleware); // TODO : faire plutot un ->make()
+        } elseif ($middleware instanceof MiddlewareBinding) {
+            $parameters = $middleware->getParameters();
+            // Resolve the middleware class name.
+            $middleware = $this->container->get($middleware->getClassName()); // TODO : faire plutot un ->make()
+            // Should be a ParameterizedMiddlewareInterface::class instance.
+            $middleware->setParameters($parameters);
         }
 
         if ($middleware instanceof MiddlewareInterface) {

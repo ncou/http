@@ -14,7 +14,7 @@ use Chiron\Http\Http;
 use Chiron\Security\Config\SecurityConfig;
 use Chiron\Security\Security;
 use Chiron\Security\Signer;
-use Chiron\Security\Support\Random;
+use Chiron\Support\Random;
 use Closure;
 use LogicException;
 use Nyholm\Psr7\Response;
@@ -22,11 +22,19 @@ use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Chiron\Config\SettingsConfig;
+use Chiron\Core\Config\SettingsConfig;
 use Chiron\Http\Config\HttpConfig;
 use Chiron\Http\Exception\DisallowedHostException;
 
 //https://github.com/django/django/blob/5fcfe5361e5b8c9738b1ee4c1e9a6f293a7dda40/tests/requests/tests.py
+
+//https://github.com/symfony/symfony/blob/4a2e4e890c54f8cd025b8a13ba9529204b21d3c6/src/Symfony/Component/HttpFoundation/Tests/RequestTest.php#L2114
+//https://github.com/symfony/symfony/blob/4a2e4e890c54f8cd025b8a13ba9529204b21d3c6/src/Symfony/Component/HttpFoundation/Tests/RequestTest.php#L2051
+
+//https://github.com/symfony/symfony/blob/4a2e4e890c54f8cd025b8a13ba9529204b21d3c6/src/Symfony/Component/HttpFoundation/Tests/RequestTest.php#L2127
+
+// TODO : ajouter des tests sur la méthode pour splitter le host et le port avec l'exemple suivant : https://github.com/symfony/symfony/blob/4a2e4e890c54f8cd025b8a13ba9529204b21d3c6/src/Symfony/Component/HttpFoundation/Tests/RequestTest.php#L2145   + ces 2 url qui doivent échouer à la validation du host : 'example.com:80/badpath' et  'example.com: recovermypassword.com'
+// Plus faire le test lorsqu'il y a un point à la fin du host !!!! => https://github.com/django/django/blob/5fcfe5361e5b8c9738b1ee4c1e9a6f293a7dda40/tests/requests/tests.py#L813
 
 class AllowedHostsMiddlewareTest extends TestCase
 {
@@ -36,7 +44,6 @@ class AllowedHostsMiddlewareTest extends TestCase
     public function setUp(): void
     {
         $this->container = new Container();
-        $this->container->setAsGlobal(); // TODO : à virer car par défaut le container est maintenant setté as global
     }
 
     public function testAllowedHostsWildcard(): void
@@ -52,6 +59,23 @@ class AllowedHostsMiddlewareTest extends TestCase
 
         $response = $this->get($core, 'http://foobar.com');
         self::assertSame(200, $response->getStatusCode());
+    }
+
+    public function testEmptyHost(): void
+    {
+        $handler = static function (ServerRequestInterface $r) {
+                return new Response();
+        };
+
+        $this->setDebugConfig(true);
+        $this->setAllowedHosts([]);
+
+        $core = $this->httpCore([AllowedHostsMiddleware::class], $handler);
+
+        $this->expectException(DisallowedHostException::class);
+        $this->expectExceptionMessage('Untrusted Host header "". The domain name provided is not valid according to RFC 1034/1035.');
+
+        $response = $this->get($core, '/');
     }
 
     /**
@@ -76,8 +100,10 @@ class AllowedHostsMiddlewareTest extends TestCase
     {
         return [
             ['localhost'],
+            ['localhost.'], // Trailing dot is for 'Absolute domain name'
             ['localhost:8080'],
             ['subdomain.localhost'],
+            ['subdomain.localhost.'], // Trailing dot is for 'Absolute domain name'
             ['127.0.0.1'],
             ['127.0.0.1:80'],
             ['[::1]'],
@@ -96,9 +122,7 @@ class AllowedHostsMiddlewareTest extends TestCase
         $this->setDebugConfig(false);
         $this->setAllowedHosts(
             [
-                'forward.com',
                 'example.com',
-                'internal.com',
                 '12.34.56.78',
                 '[2001:19f0:feee::dead:beef:cafe]',
                 'xn--4ca9at.com',
@@ -118,6 +142,7 @@ class AllowedHostsMiddlewareTest extends TestCase
     {
         return [
             ['example.com'],
+            ['example.com.'], // Trailing dot is for 'Absolute domain name'
             ['example.com:80'],
             ['12.34.56.78'],
             ['12.34.56.78:443'],
@@ -143,25 +168,16 @@ class AllowedHostsMiddlewareTest extends TestCase
         $this->setDebugConfig(false);
         $this->setAllowedHosts(
             [
-                'forward.com',
-                'example.com',
-                'internal.com',
-                '12.34.56.78',
-                '[2001:19f0:feee::dead:beef:cafe]',
-                'xn--4ca9at.com',
-                '.multitenant.com',
-                'INSENSITIVE.com',
-                '[::ffff:169.254.169.254]'
+                'example.com'
             ]
         );
 
         $core = $this->httpCore([AllowedHostsMiddleware::class], $handler);
 
         $this->expectException(DisallowedHostException::class);
-        $this->expectExceptionMessage('Invalid Host header');
+        $this->expectExceptionMessage('Untrusted Host header');
 
         $response = $this->get($core, 'http://' . $host);
-        self::assertSame(200, $response->getStatusCode());
     }
 
     public function poisonedHosts(): array
@@ -170,8 +186,8 @@ class AllowedHostsMiddlewareTest extends TestCase
             ['example.com@evil.tld'],
             ['example.com:dr.frankenstein@evil.tld'],
             ['example.com:dr.frankenstein@evil.tld:80'],
-            ['example.com.:80/badpath'],
-            ['example.com.recovermypassword.com'],
+            ['example.com..'],
+            ['other.com'],
         ];
     }
 
@@ -196,7 +212,7 @@ class AllowedHostsMiddlewareTest extends TestCase
 
 
 
-
+// TODO : méthodes à mettre dans une classe TestCase dédiée et étendre de cette classe pour nos tests http !!!!
     protected function httpCore(array $middlewares = [], Closure $handler): Http
     {
         $http = new Http($this->container);

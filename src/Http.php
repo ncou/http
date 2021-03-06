@@ -31,7 +31,7 @@ final class Http implements RequestHandlerInterface, SingletonInterface
 
     public function __construct(Container $container)
     {
-        $this->container = $container;
+        $this->container = $container; // TODO : virer cette ligne et faire plutot étendre la classe de ContainerAware pour que via la mutation on puisse alimenter le container ????
         $this->middlewares = new SplPriorityQueue();
     }
 

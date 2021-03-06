@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-use Chiron\Security\Support\Random;
+use Chiron\Support\Random;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Chiron\Http\Traits\ParameterizedTrait;
 
 // TODO : permettre aussi au monolog processor de stocker cet id dans les logs :
 //https://github.com/php-middleware/request-id/tree/master/src
@@ -21,8 +22,12 @@ use Psr\Http\Server\RequestHandlerInterface;
 //https://github.com/yiisoft/yii-web/blob/master/src/Middleware/TagRequest.php
 
 // TODO : renommer la classe en XRequestIdMiddleware ou en UniqueIdMiddleware + passer la constante à X-Unique-ID ???
-final class RequestIdMiddleware implements MiddlewareInterface
+// TODO : attention la classe Random n'est pas présente dans les dépendances du package !!!!
+// TODO : ajouter une méthode __constructor($name = 'X-Request-ID') ce qui permettra lors de l'ajout du middleware de modifier le header name facilement, via un autowire avec passage d'informations au constructeur. Cela va donne un truc du genre :     $http->addMiddleware(RequestIdMiddleware::class, ['name' => 'X-Unique-ID']);
+final class RequestIdMiddleware implements ParameterizedMiddlewareInterface
 {
+    use ParameterizedTrait;
+
     // TODO : permettre à l'utilisateur de configurer la valeur de cette clés ???? avec une méthode setHeaderName() par exemple
     public const HEADER_NAME = 'X-Request-ID'; // 'X-Correlation-ID' // 'X-Unique-ID'
 
@@ -36,19 +41,20 @@ final class RequestIdMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $id = $request->getHeader(self::HEADER_NAME);
+        $headerName = $this->getParameter('header_name', self::HEADER_NAME); // TODO : ajouter plutot un constructeur et initialiser la valeur par défaut de header_name en faisant un setParameters(['header_name' => self::HEADER_NAME]); et passer la variable de classe HEADER_NAME en private !!!!
+        $id = $request->getHeader($headerName);
 
         // generate an unique identifier if not already present.
         // TODO : il faudrait plutot faire un if (! $request->hasHeader(xxx)) plutot que le test avec empty
         // TODO : le $id sera un tableau vide si il n'existe pas.
         if (empty($id)) {
             $id = Random::uuid();
-            $request = $request->withHeader(self::HEADER_NAME, $id);
+            $request = $request->withHeader($headerName, $id);
         }
 
-        $response = $handler->handle($request);
+        $response = $handler->handle($request); // TODO : il faudrait aussi ajouter cet identifiant dans les attributs de la request comme ca on pourrait l'utiliser plus tard !!!!
 
         // persist the unique id in the response header list.
-        return $response->withHeader(self::HEADER_NAME, $id);
+        return $response->withHeader($headerName, $id);
     }
 }
