@@ -24,6 +24,7 @@ final class HttpConfig extends AbstractInjectableConfig
             'headers'          => Expect::arrayOf('string')->assert([Validator::class, 'isArrayAssociative'], 'associative array'),
             'middlewares'      => Expect::array(), // TODO : vérifier que la valeur est une string ou un objet de type MiddlewareBinding. Et je pense qu'on pourrait aussi lui passer une instance d'un MiddlewareInterface !!!!
             'handle_exception' => Expect::bool()->default(true),
+            'tag_request'      => Expect::bool()->default(true),
             'allowed_hosts'    => Expect::listOf('string'),
             'disallowed_user_agents' => Expect::listOf('string'),
         ]);
@@ -57,6 +58,11 @@ final class HttpConfig extends AbstractInjectableConfig
     public function getHandleException(): bool
     {
         return $this->get('handle_exception');
+    }
+
+    public function getTagRequest(): bool
+    {
+        return $this->get('tag_request');
     }
 
     public function getAllowedHosts(): array

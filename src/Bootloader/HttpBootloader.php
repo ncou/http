@@ -10,6 +10,7 @@ use Chiron\Core\Config\SettingsConfig;
 use Chiron\Http\Http;
 use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Http\Middleware\AllowedHostsMiddleware;
+use Chiron\Http\Middleware\TagRequestMiddleware;
 use Chiron\Core\Exception\BootException;
 
 final class HttpBootloader extends AbstractBootloader
@@ -21,8 +22,13 @@ final class HttpBootloader extends AbstractBootloader
             $http->addMiddleware(ErrorHandlerMiddleware::class, Http::PRIORITY_MAX);
         }
 
+        // add the middleware to attach a unique id in the request attributes.
+        if ($config->getTagRequest() === true) {
+            $http->addMiddleware(TagRequestMiddleware::class, Http::PRIORITY_MAX - 1);
+        }
+
         // add the 'allowed hosts' middleware just after the error handler in the middleware stack.
-        $http->addMiddleware(AllowedHostsMiddleware::class, Http::PRIORITY_MAX - 1);
+        $http->addMiddleware(AllowedHostsMiddleware::class, Http::PRIORITY_MAX - 2);
 
         // assert the allowed hosts list is not empty, because the site will not work !
         if ($config->getAllowedHosts() === [] && $settings->isDebug() === false) {

@@ -11,6 +11,9 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Chiron\Http\Traits\ParameterizedTrait;
 
+//https://pypi.org/project/django-request-id/
+//https://github.com/nigma/django-request-id/tree/master/request_id
+
 // TODO : permettre aussi au monolog processor de stocker cet id dans les logs :
 //https://github.com/php-middleware/request-id/tree/master/src
 //https://github.com/php-middleware/request-id/blob/master/src/MonologProcessor.php
