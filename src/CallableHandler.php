@@ -15,6 +15,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 // TODO : mieux gérer les exceptions dans le cas ou il y a une erreur lors du $injector->call()    exemple :   https://github.com/spiral/framework/blob/e63b9218501ce882e661acac284b7167b79da30a/src/Hmvc/src/AbstractCore.php#L67       +         https://github.com/spiral/framework/blob/master/src/Router/src/CoreHandler.php#L199
 
+//https://github.com/spiral/framework/blob/d17c175e85165456fbd2d841c8e81165e371675c/src/Http/src/CallableHandler.php#L66
+
 /**
  * Callback wraps arbitrary PHP callback into object matching [[MiddlewareInterface]].
  * Usage example:
@@ -67,11 +69,13 @@ class CallableHandler implements RequestHandlerInterface, ContainerAwareInterfac
             //https://github.com/PHP-DI/Slim-Bridge/blob/master/src/ControllerInvoker.php#L43
             $response = $this->getContainer()->call($callable, $parameters);
         } catch (InvocationException $e) {
+            //https://github.com/spiral/framework/blob/d17c175e85165456fbd2d841c8e81165e371675c/src/Router/src/CoreHandler.php#L200
             // TODO : améliorer le code pour permettre de passer en paramétre l'exception précédente ($e) à cette http exception
             // TODO : il faudrait surement lever une exception NotFoundHttpException dans le cas ou la mathode du callable n'existe pas dans la classe du callable, mais il faut pour cela séparer ce type d'exception dans la classe Injector pour ne pas remonter systématiquement une Exception InvocationException qui gére à la fois les probléme de callable qui n'existent pas et les callables qui n'ont pas le bon nombre d'arguments en paramétres.
             throw new BadRequestHttpException();
         }
 
+        ////https://github.com/spiral/framework/blob/d17c175e85165456fbd2d841c8e81165e371675c/src/Http/src/CallableHandler.php#L66
         // TODO : il faudrait réussir via la reflexion à récupérer la ligne php ou se trouve le callable et utiliser ce file/line dans l'exception, ca serait plus simple à débugger !!! ou à minima si c'est un tableau on affiche le détail du tableau (qui sera au format, [class, 'method'])
         if (! $response instanceof ResponseInterface) {
             // TODO : retourner plutot une HandlerException ????  https://github.com/zendframework/zend-stratigility/blob/master/src/Exception/MissingResponseException.php

@@ -1,0 +1,75 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Chiron\Http\Middleware;
+
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use Chiron\Http\Message\RequestMethod as Method;
+use Chiron\Http\Support\Uri;
+use Chiron\Http\Exception\Client\NotFoundHttpException;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Chiron\Routing\RouteCollection;
+use Chiron\Http\ErrorHandler\Renderer\HtmlRenderer;
+
+final class NotFoundDebugMiddleware implements MiddlewareInterface
+{
+    /** @param RouteCollection $routes */
+    private $routes;
+    /** @param HtmlRenderer $htmlRenderer */
+    private $renderer;
+
+    public function __construct(RouteCollection $routes, HtmlRenderer $renderer)
+    {
+        $this->routes = $routes;
+        $this->renderer = $renderer;
+    }
+
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        try {
+            $response = $handler->handle($request);
+        } catch(NotFoundHttpException $e){
+            $response = $this->displayRouteNotFoundDetails($request);
+        }
+
+        return $response;
+    }
+
+    private function displayRouteNotFoundDetails(ServerRequestInterface $request): ResponseInterface
+    {
+        if($this->routes->isEmpty()) {
+          $path = dirname(__DIR__). '/../resources/default_urlconf.html';
+          $data = ['version' => '1.0']; // TODO : utiliser le numéro de version présent dans la classe Framework::class
+        } else {
+          $path = dirname(__DIR__). '/../resources/technical_404.html';
+          $data = [
+            'request_absolute_uri' => (string) $request->getUri(),
+            'request_path' => $request->getUri()->getPath(),
+            'request_method' => $request->getMethod(),
+          ];
+
+          $data['patterns'] = $this->wrapHtmlListRoutes($this->routes->getRoutes());
+        }
+
+        $response = $this->renderer->render($path, $data)->withStatus(404); // TODO : utiliser une classe de constantes pour les codes HTTP !!!!
+
+        return $response;
+    }
+
+    private function wrapHtmlListRoutes(array $routes): string
+    {
+        $patterns = '<ol>';
+
+        foreach ($routes as $route) {
+            $patterns .= '<li>' . $route->getPath() . '</li>';
+          }
+
+        $patterns .= '</ol>';
+
+        return $patterns;
+    }
+}

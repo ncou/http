@@ -61,6 +61,14 @@ final class Http implements RequestHandlerInterface, SingletonInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+
+        // TODO : il faudrait pouvoir gérer ici le cas ou la réponse n'est pas une instance de ResponseInterface, mais par exemple une string et convertir cela en objet response via une classe de ResponseFactory.
+        // https://github.com/spiral/framework/blob/d17c175e85165456fbd2d841c8e81165e371675c/src/Router/src/CoreHandler.php#L172
+        //https://github.com/spiral/framework/blob/d17c175e85165456fbd2d841c8e81165e371675c/src/Http/src/CallableHandler.php#L47
+
+        // TODO : faire un try/catch autour de la méthode handle et lever une response http 500 par défaut avec un message basique du genre "contact the administrator", ce message ne serait utiliser quand dans le cas ou l'utilisateur n'a pas ajouter de HttpErrorHandlerMiddleware pour gérer les erreurs http, donc ce cas ne devrait pas souvent arriver mais cela évite de dupliquer des try/catch dans tous les web dispatcher (SapiDispatcher / WorkermanDispatcher / RrDispatcher ...etc...).
+        //https://github.com/spiral/framework/blob/d17c175e85165456fbd2d841c8e81165e371675c/src/Framework/Http/RrDispatcher.php#L101
+
         return $this->getPipeline()->handle($request);
     }
 }
