@@ -45,7 +45,8 @@
             ],
             "bootloaders": [
                 "Chiron\\Http\\Bootloader\\PublishHttpBootloader",
-                "Chiron\\Http\\Bootloader\\HttpBootloader"
+                "Chiron\\Http\\Bootloader\\HttpBootloader",
+                "Chiron\\Http\\Bootloader\\HttpListenerBootloader"
             ]
         }
     }

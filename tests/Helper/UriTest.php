@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Http\Tests\Middleware;
+namespace Chiron\Http\Test\Middleware;
 
 use Chiron\Container\Container;
 use Chiron\Csrf\Config\CsrfConfig;
@@ -11,7 +11,6 @@ use Chiron\Csrf\Middleware\CsrfProtectionMiddleware;
 use Chiron\Csrf\Middleware\CsrfTokenMiddleware;
 use Chiron\Http\Middleware\AllowedHostsMiddleware;
 use Chiron\Http\Http;
-use Chiron\Security\Config\SecurityConfig;
 use Chiron\Security\Security;
 use Chiron\Security\Signer;
 use Chiron\Support\Random;
@@ -22,7 +21,6 @@ use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Chiron\Core\Config\SettingsConfig;
 use Chiron\Http\Config\HttpConfig;
 use Chiron\Http\Exception\DisallowedHostException;
 use Chiron\Http\Helper\Uri;

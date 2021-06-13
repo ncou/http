@@ -15,6 +15,9 @@ use Psr\Container\NotFoundExceptionInterface;
 use Chiron\Core\Exception\ScopeException;
 use Psr\Container\ContainerInterface;
 
+// TODO : réflechir si on conserve cette classe car elle n'est pas vraiment utilisée !!!!
+// TODO : eventuellement déplacer cette classe dans le répertoire Helper car elle n'a pas d'utilité à rester à la racine du package http.
+
 final class RequestScope
 {
     /** @var ContainerInterface */

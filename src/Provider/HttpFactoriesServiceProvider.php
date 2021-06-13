@@ -1,15 +1,5 @@
 <?php
 
-/**
- * Chiron (http://www.chironframework.com).
- *
- * @see      https://github.com/ncou/Chiron
- */
-
-//https://github.com/php-services/http-factory-nyholm/blob/master/src/NyholmHttpFactoryServiceProvider.php
-
-//https://github.com/userfrosting/UserFrosting/blob/master/app/system/ServicesProvider.php
-//https://github.com/slimphp/Slim/blob/3.x/Slim/DefaultServicesProvider.php
 declare(strict_types=1);
 
 namespace Chiron\Http\Provider;
@@ -26,43 +16,53 @@ use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
 
+//https://github.com/php-services/http-factory-nyholm/blob/master/src/NyholmHttpFactoryServiceProvider.php
+
+//https://github.com/userfrosting/UserFrosting/blob/master/app/system/ServicesProvider.php
+//https://github.com/slimphp/Slim/blob/3.x/Slim/DefaultServicesProvider.php
+
 /**
  * Chiron http factories services provider.
  */
-class HttpFactoriesServiceProvider implements ServiceProviderInterface
+final class HttpFactoriesServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register Chiron http factories services.
      *
-     * @param Container $container A DI container implementing ArrayAccess and container-interop.
+     * @param BindingInterface $binder
      */
-    public function register(BindingInterface $container): void
+    public function register(BindingInterface $binder): void
     {
         // *** register factories ***
-        $container->bind(ResponseFactoryInterface::class, function () {
+        /*
+        $binder->bind(ResponseFactoryInterface::class, function () {
             $factory = Psr17FactoryFinder::findResponseFactory();
             $headers = []; // TODO : aller rechercher dans la classe httpConfig les headers de base à injecter dans la réponse.
 
             return new ResponseWrapper($factory, $headers);
-        });
+        });*/
 
-        $container->bind(RequestFactoryInterface::class, [Psr17FactoryFinder::class, 'findRequestFactory']);
-        $container->bind(ServerRequestFactoryInterface::class, [Psr17FactoryFinder::class, 'findServerRequestFactory']);
-        $container->bind(UriFactoryInterface::class, [Psr17FactoryFinder::class, 'findUriFactory']);
-        $container->bind(UploadedFileFactoryInterface::class, [Psr17FactoryFinder::class, 'findUploadedFileFactory']);
-        $container->bind(StreamFactoryInterface::class, [Psr17FactoryFinder::class, 'findStreamFactory']);
+        // TODO : faire plutot des ->singleton pour économiser de la mémoire/temps ????
+
+        $binder->bind(ResponseFactoryInterface::class, [Psr17FactoryFinder::class, 'findResponseFactory']);
+
+        $binder->bind(RequestFactoryInterface::class, [Psr17FactoryFinder::class, 'findRequestFactory']);
+        $binder->bind(ServerRequestFactoryInterface::class, [Psr17FactoryFinder::class, 'findServerRequestFactory']);
+        $binder->bind(UriFactoryInterface::class, [Psr17FactoryFinder::class, 'findUriFactory']);
+        $binder->bind(UploadedFileFactoryInterface::class, [Psr17FactoryFinder::class, 'findUploadedFileFactory']);
+        $binder->bind(StreamFactoryInterface::class, [Psr17FactoryFinder::class, 'findStreamFactory']);
 
         // *** register alias ***
-        $this->registerAlias($container);
+        $this->registerAlias($binder); // TODO : vérifier l'utilité des alias !!!!
     }
 
-    private function registerAlias(Container $container): void
+    private function registerAlias(BindingInterface $binder): void
     {
-        $container->alias('responseFactory', ResponseFactoryInterface::class);
-        $container->alias('requestFactory', RequestFactoryInterface::class);
-        $container->alias('serverRequestFactory', ServerRequestFactoryInterface::class);
-        $container->alias('uriFactory', UriFactoryInterface::class);
-        $container->alias('uploadedFileFactory', UploadedFileFactoryInterface::class);
-        $container->alias('streamFactory', StreamFactoryInterface::class);
+        $binder->alias('responseFactory', ResponseFactoryInterface::class);
+        $binder->alias('requestFactory', RequestFactoryInterface::class);
+        $binder->alias('serverRequestFactory', ServerRequestFactoryInterface::class);
+        $binder->alias('uriFactory', UriFactoryInterface::class);
+        $binder->alias('uploadedFileFactory', UploadedFileFactoryInterface::class);
+        $binder->alias('streamFactory', StreamFactoryInterface::class);
     }
 }

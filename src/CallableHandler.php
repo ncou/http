@@ -13,6 +13,12 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+
+// TODO : gérer le cas ou la valeur de retour n'est pas un objet de type ResponseInterface, on pourra wrapper le résultat (tableau en json par exemple) pour retourner un objet Resposne.
+// https://github.com/top-think/framework/blob/4de6f58c5e12a1ca80c788887b5208a6705f85d3/src/think/route/Dispatch.php#L93
+// https://github.com/spiral/framework/blob/d17c175e85165456fbd2d841c8e81165e371675c/src/Router/src/CoreHandler.php#L144
+// https://github.com/middlewares/utils/blob/a9ef1e5365020ead0ae343b95602bd877a9bf852/src/CallableHandler.php#L68
+
 // TODO : mieux gérer les exceptions dans le cas ou il y a une erreur lors du $injector->call()    exemple :   https://github.com/spiral/framework/blob/e63b9218501ce882e661acac284b7167b79da30a/src/Hmvc/src/AbstractCore.php#L67       +         https://github.com/spiral/framework/blob/master/src/Router/src/CoreHandler.php#L199
 
 //https://github.com/spiral/framework/blob/d17c175e85165456fbd2d841c8e81165e371675c/src/Http/src/CallableHandler.php#L66
@@ -33,7 +39,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  *
  * @see MiddlewareInterface
  */
-// TODO : corriger le phpdoc de la classe !!!!
+// TODO : corriger le phpdoc de la classe !!!! Et indiquer qu'elle doit rester en classe NON FINAL !!!!
 class CallableHandler implements RequestHandlerInterface, ContainerAwareInterface
 {
     use ContainerAwareTrait;
@@ -57,16 +63,18 @@ class CallableHandler implements RequestHandlerInterface, ContainerAwareInterfac
     }
 
     // TODO : indiquer dans la phpDoc tous les typehints possibles pour $callable !!!
+    // TODO : indiquer qu'une exception est levée si le container n'est pas défini !!!
+    // TODO : renommer la méthode en perform() ???? ou invoke() ????
     protected function call($callable, $parameters): ResponseInterface
     {
         // TODO : faire un $this->hasContainer et si le résultat est false dans ce cas lever une une HandlerException en indiquant que le container doit être setter pour executer le handler ????
         /*
         if (! $this->hasContainer()) {
             throw new RouteException('Unable to configure route pipeline without associated container');
+            // throw new MissingContainerException('Container is missing, use setContainer() method to set it.');
         }*/
 
         try {
-            //https://github.com/PHP-DI/Slim-Bridge/blob/master/src/ControllerInvoker.php#L43
             $response = $this->getContainer()->call($callable, $parameters);
         } catch (InvocationException $e) {
             //https://github.com/spiral/framework/blob/d17c175e85165456fbd2d841c8e81165e371675c/src/Router/src/CoreHandler.php#L200

@@ -13,6 +13,7 @@ use Chiron\Core\Config\SettingsConfig;
 use Chiron\Http\Config\HttpConfig;
 use Chiron\Http\Exception\DisallowedHostException;
 use Chiron\Http\Exception\SuspiciousOperationException;
+use Chiron\Support\Str;
 
 /**
  * Allowed Hosts verification.
@@ -73,15 +74,25 @@ final class AllowedHostsMiddleware implements MiddlewareInterface
      *
      * @return string
      */
+    // TODO : déplacer cette méthode dans la classe Helper\Uri ???? exemple la méthode split_domain_port() de django : https://github.com/django/django/blob/8bcb00858e0ddec79cc96669c238d29c30d7effb/django/http/request.py#L620
+    // TODO : forcer un lowercase sur le $host ??? cad ne pas faire confiance à l'implémentation PSR7 !!!!
+    // TODO : renommer cette méthode en getDomain() ????
     // TODO : ajouter un test pour virer le trailing dot : https://github.com/django/django/blob/a948d9df394aafded78d72b1daa785a0abfeab48/tests/requests/tests.py#L814
     // TODO : gérer les domains unicode (via le punny code) => https://github.com/ncou/Chiron-Middlewares/blob/master/src/Chiron/Http/Middleware/ReferralSpamMiddleware.php#L72
     private function getHost(ServerRequestInterface $request): string
     {
         $host = $request->getUri()->getHost();
 
+        // It's an IPv6 address without a port.
+        if (Str::endsWith($host, ']')) {
+            return $host;
+        }
+
+        $host = Str::before($host, ':');
+
         // Remove a trailing dot (if present) from the domain.
-        if (substr($host, -1) === '.') { // TODO : utiliser la classe Suppor\Str::class pour la méthode : Str::endsWith($host, '.')
-            $host = substr($host, 0, -1);
+        if (Str::endsWith($host, '.')) {
+            $host = Str::substr($host, 0, -1);
         }
 
         return $host;

@@ -6,7 +6,7 @@ namespace Chiron\Http\Bootloader;
 
 use Chiron\Core\Container\Bootloader\AbstractBootloader;
 use Chiron\Core\Directories;
-use Chiron\Core\Publisher;
+use Chiron\Publisher\Publisher;
 
 final class PublishHttpBootloader extends AbstractBootloader
 {

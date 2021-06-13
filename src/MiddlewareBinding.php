@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Http\Middleware;
+namespace Chiron\Http;
 
 use Chiron\Support\Random;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Chiron\Http\Middleware\ParameterizedMiddlewareInterface;
 use InvalidArgumentException;
 
 /**
@@ -27,7 +28,7 @@ final class MiddlewareBinding
      */
     public function __construct(string $className, array $parameters = [])
     {
-        // Throw an exception if the middleware is not 'parameterized' !
+        // Throw an exception if the middleware is not 'parameterizable' !
         $this->assertParameterizedMiddleware($className);
 
         $this->className = $className;

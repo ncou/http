@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Chiron\Http\Traits;
 
 use Chiron\Http\CallableHandler;
-use Chiron\Http\Middleware\MiddlewareBinding;
+use Chiron\Http\MiddlewareBinding;
 use Chiron\Pipeline\Pipeline;
 use InvalidArgumentException;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+
+// TODO : créer plutot une classe abstraite avec ce bout de code + un implement ParameterizedMiddlewareInterface, ca évitera de garder un trait pas forcement trés utile !!!
 
 /**
  * Trait used in the 'parameterized' Middlewares classes.
@@ -23,6 +25,7 @@ trait ParameterizedTrait
      * Creates middleware binding (class+parameters) to be used by this middleware
      *
      * @param array $parameters The parameters to include in this middleware
+     *
      * @return MiddlewareBinding The middleware binding (class+parameters)
      */
     // TODO : éventuellement déplacer cette méthode dans un autre trait pour rendre le ParameterizedTrait plus générique dans le cas ou on veut l'utiliser dans une classe autre qu'un middleware.

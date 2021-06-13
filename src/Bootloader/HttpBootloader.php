@@ -29,7 +29,7 @@ final class HttpBootloader extends AbstractBootloader
             $http->addMiddleware(TagRequestMiddleware::class, Http::PRIORITY_MAX - 1);
         }
 
-        // add the debugger for route not found middlewarein the middleware stack.
+        // add the debugger for route not found middleware in the middleware stack.
         $http->addMiddleware(NotFoundDebugMiddleware::class, Http::PRIORITY_MAX - 2);
 
         // add the 'allowed hosts' middleware in the middleware stack.
