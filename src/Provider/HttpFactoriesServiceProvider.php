@@ -45,7 +45,6 @@ final class HttpFactoriesServiceProvider implements ServiceProviderInterface
         // TODO : faire plutot des ->singleton pour économiser de la mémoire/temps ????
 
         $binder->bind(ResponseFactoryInterface::class, [Psr17FactoryFinder::class, 'findResponseFactory']);
-
         $binder->bind(RequestFactoryInterface::class, [Psr17FactoryFinder::class, 'findRequestFactory']);
         $binder->bind(ServerRequestFactoryInterface::class, [Psr17FactoryFinder::class, 'findServerRequestFactory']);
         $binder->bind(UriFactoryInterface::class, [Psr17FactoryFinder::class, 'findUriFactory']);

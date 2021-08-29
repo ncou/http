@@ -15,7 +15,7 @@ final class AfterRequestEvent
     private $response;
 
     /**
-     * @param ResponseInterface
+     * @param ResponseInterface $response
      */
     public function __construct(ResponseInterface $response)
     {

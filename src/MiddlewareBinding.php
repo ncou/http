@@ -11,12 +11,18 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Chiron\Http\Middleware\ParameterizedMiddlewareInterface;
 use InvalidArgumentException;
+use Chiron\Container\ContainerAwareInterface;
+use Chiron\Container\ContainerAwareTrait;
+
 
 /**
  * Defines a parameterized middleware binding (store the middleware name + the parameters to inject after initialisation)
  */
-final class MiddlewareBinding
+// TODO : classe à renommer en ParameterizedMiddleware !!!! et à déplacer dans le répertoire Chiron\Http\Middleware
+final class MiddlewareBinding implements MiddlewareInterface, ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /** @var string The middleware class name */
     private $className;
     /** @var array The middleware parameters */
@@ -36,22 +42,6 @@ final class MiddlewareBinding
     }
 
     /**
-     * @return string
-     */
-    public function getClassName(): string
-    {
-        return $this->className;
-    }
-
-    /**
-     * @return array
-     */
-    public function getParameters(): array
-    {
-        return $this->parameters;
-    }
-
-    /**
      * Throw an exception if the middleware doesn't implement the parameterized interface.
      *
      * @param string $middleware The Middleware class name to check.
@@ -65,5 +55,14 @@ final class MiddlewareBinding
                 ParameterizedMiddlewareInterface::class
             ));
         }
+    }
+
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        // Resolve the middleware class name & inject parameters.
+        $middleware = $this->container->injector()->build($this->className);
+        $middleware->setParameters($this->parameters);
+
+        return $middleware->process($request, $handler);
     }
 }

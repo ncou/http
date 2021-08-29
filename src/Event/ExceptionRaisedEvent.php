@@ -16,8 +16,8 @@ final class ExceptionRaisedEvent
     private $request;
 
     /**
-     * @param Throwable
-     * @param ServerRequestInterface
+     * @param Throwable $exception
+     * @param ServerRequestInterface $request
      */
     public function __construct(Throwable $exception, ServerRequestInterface $request)
     {

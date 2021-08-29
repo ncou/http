@@ -29,6 +29,7 @@ trait ParameterizedTrait
      * @return MiddlewareBinding The middleware binding (class+parameters)
      */
     // TODO : éventuellement déplacer cette méthode dans un autre trait pour rendre le ParameterizedTrait plus générique dans le cas ou on veut l'utiliser dans une classe autre qu'un middleware.
+    // TODO : renommer la méthode en withParameters(array)
     public static function with(array $parameters) : MiddlewareBinding
     {
         return new MiddlewareBinding(static::class, $parameters);

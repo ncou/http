@@ -21,7 +21,6 @@ use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Chiron\Core\Config\SettingsConfig;
 use Chiron\Http\Config\HttpConfig;
 use Chiron\Http\Exception\DisallowedHostException;
 

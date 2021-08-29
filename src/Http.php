@@ -18,6 +18,8 @@ use Chiron\Http\Event\ExceptionRaisedEvent;
 use Throwable;
 use Psr\Http\Message\ResponseFactoryInterface;
 
+// TODO : améliorer le ResponseFacotryAware avec ce code : https://github.com/bemit/middleware-utils
+
 //https://github.com/zendframework/zend-stdlib/blob/master/src/SplPriorityQueue.php
 
 // TODO : utiliser un ContainerAwareTrait !!!
@@ -26,7 +28,7 @@ final class Http implements RequestHandlerInterface, SingletonInterface
 {
     use PipelineTrait;
 
-    // TODO : externaliser ces constantes dans une classe séparée ? style Priority::MAX
+    // TODO : externaliser ces constantes dans une classe séparée ? style Priority::MAX ou MiddlewarePriority::class
     public const PRIORITY_MAX = 300;
     public const PRIORITY_HIGH = 200;
     public const PRIORITY_ABOVE_NORMAL = 100;
@@ -97,7 +99,6 @@ final class Http implements RequestHandlerInterface, SingletonInterface
     }
 
     /**
-     * @param EmitterInterface $emitter
      * @param \Throwable       $e
      *
      * @return ResponseInterface
@@ -110,7 +111,7 @@ final class Http implements RequestHandlerInterface, SingletonInterface
         $response = $responseFactory->createResponse(500); // TODO : utiliser une constante !!!!
 
         // Reporting system (non handled) exception directly to the client.
-        $response->getBody()->write('Unexpected exception. Try to catch exceptions in the middlware stack.');
+        $response->getBody()->write('Unexpected exception. Try to catch exceptions in the middleware stack.');
 
         return $response;
     }

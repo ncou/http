@@ -21,7 +21,7 @@ use Nyholm\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Chiron\Core\Config\SettingsConfig;
+use Chiron\Core\Core;
 use Chiron\Http\Config\HttpConfig;
 use Chiron\Http\Exception\DisallowedHostException;
 
@@ -51,7 +51,7 @@ class AllowedHostsMiddlewareTest extends TestCase
                 return new Response();
         };
 
-        $this->setDebugConfig(false);
+        $this->setDebug(false);
         $this->setAllowedHosts('*');
 
         $core = $this->httpCore([AllowedHostsMiddleware::class], $handler);
@@ -66,7 +66,7 @@ class AllowedHostsMiddlewareTest extends TestCase
                 return new Response();
         };
 
-        $this->setDebugConfig(true);
+        $this->setDebug(true);
         $this->setAllowedHosts([]);
 
         $core = $this->httpCore([AllowedHostsMiddleware::class], $handler);
@@ -86,7 +86,7 @@ class AllowedHostsMiddlewareTest extends TestCase
                 return new Response();
         };
 
-        $this->setDebugConfig(true);
+        $this->setDebug(true);
         $this->setAllowedHosts([]);
 
         $core = $this->httpCore([AllowedHostsMiddleware::class], $handler);
@@ -118,7 +118,7 @@ class AllowedHostsMiddlewareTest extends TestCase
                 return new Response();
         };
 
-        $this->setDebugConfig(false);
+        $this->setDebug(false);
         $this->setAllowedHosts(
             [
                 'example.com',
@@ -164,7 +164,7 @@ class AllowedHostsMiddlewareTest extends TestCase
                 return new Response();
         };
 
-        $this->setDebugConfig(false);
+        $this->setDebug(false);
         $this->setAllowedHosts(
             [
                 'example.com'
@@ -190,12 +190,10 @@ class AllowedHostsMiddlewareTest extends TestCase
         ];
     }
 
-    private function setDebugConfig(bool $debug): void
+    private function setDebug(bool $debug): void
     {
-        $settingsConfig = new SettingsConfig([
-            'debug' => $debug,
-        ]);
-        $this->container->bind(SettingsConfig::class, $settingsConfig);
+        $core = new Core($debug);
+        $this->container->bind(Core::class, $core);
     }
 
     /**

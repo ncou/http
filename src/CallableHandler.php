@@ -13,6 +13,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+// TODO : créer un package avec un faux ResponseInterface qui stock en raw la valeur de retour et qui via un middleware formatera la réponse.
+// https://github.com/yiisoft/data-response/blob/45937cb06c1bd057da6c6a18d65fab3182e87b55/src/DataResponse.php#L61
+// https://github.com/yiisoft/data-response/blob/master/src/Middleware/FormatDataResponse.php
 
 // TODO : gérer le cas ou la valeur de retour n'est pas un objet de type ResponseInterface, on pourra wrapper le résultat (tableau en json par exemple) pour retourner un objet Resposne.
 // https://github.com/top-think/framework/blob/4de6f58c5e12a1ca80c788887b5208a6705f85d3/src/think/route/Dispatch.php#L93
@@ -54,18 +57,13 @@ class CallableHandler implements RequestHandlerInterface, ContainerAwareInterfac
      */
     public function __construct($callable)
     {
+        // TODO : ajouter une vérification si le callable a le bon format ? par exemple si c'est un is_callable ou is_object ou is_string ou is_array (éventeullement vérifier que la tableau a une taille de 2 éléments et que le 1er élément est une string ou un objet et que le 2eme élement est une string) ???? ou alors indiquer qu'une NotCallableException sera levée par le package Invoker lors du call !!!!
         $this->callable = $callable;
     }
 
-    public function handle(ServerRequestInterface $request): ResponseInterface
-    {
-        return $this->call($this->callable, $request->getAttributes());
-    }
-
     // TODO : indiquer dans la phpDoc tous les typehints possibles pour $callable !!!
-    // TODO : indiquer qu'une exception est levée si le container n'est pas défini !!!
-    // TODO : renommer la méthode en perform() ???? ou invoke() ????
-    protected function call($callable, $parameters): ResponseInterface
+    // TODO : indiquer qu'une exception est levée si le container n'est pas défini par la méthode getContainer() !!!
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
         // TODO : faire un $this->hasContainer et si le résultat est false dans ce cas lever une une HandlerException en indiquant que le container doit être setter pour executer le handler ????
         /*
@@ -74,8 +72,10 @@ class CallableHandler implements RequestHandlerInterface, ContainerAwareInterfac
             // throw new MissingContainerException('Container is missing, use setContainer() method to set it.');
         }*/
 
+        // TODO : indiquer qu'une exception du type NotCallableException peut être levée si la callable n'est pas au bon format !!!!
         try {
-            $response = $this->getContainer()->call($callable, $parameters);
+            // Use the request attributes as an array to help during the callable parameters resolutions.
+            $response = $this->getContainer()->injector()->invoke($this->callable, $request->getAttributes());
         } catch (InvocationException $e) {
             //https://github.com/spiral/framework/blob/d17c175e85165456fbd2d841c8e81165e371675c/src/Router/src/CoreHandler.php#L200
             // TODO : améliorer le code pour permettre de passer en paramétre l'exception précédente ($e) à cette http exception
@@ -83,13 +83,13 @@ class CallableHandler implements RequestHandlerInterface, ContainerAwareInterfac
             throw new BadRequestHttpException();
         }
 
-        ////https://github.com/spiral/framework/blob/d17c175e85165456fbd2d841c8e81165e371675c/src/Http/src/CallableHandler.php#L66
+        //https://github.com/spiral/framework/blob/d17c175e85165456fbd2d841c8e81165e371675c/src/Http/src/CallableHandler.php#L66
         // TODO : il faudrait réussir via la reflexion à récupérer la ligne php ou se trouve le callable et utiliser ce file/line dans l'exception, ca serait plus simple à débugger !!! ou à minima si c'est un tableau on affiche le détail du tableau (qui sera au format, [class, 'method'])
         if (! $response instanceof ResponseInterface) {
             // TODO : retourner plutot une HandlerException ????  https://github.com/zendframework/zend-stratigility/blob/master/src/Exception/MissingResponseException.php
             throw new LogicException(sprintf(
                 'Decorated callable request handler of type "%s" failed to produce a response.',
-                is_object($callable) ? get_class($callable) : gettype($callable)
+                is_object($this->callable) ? get_class($this->callable) : gettype($this->callable)
             ));
         }
 

@@ -7,7 +7,6 @@ namespace Chiron\Http\Bootloader;
 use Chiron\Container\Container;
 use Chiron\Core\Container\Bootloader\AbstractBootloader;
 use Chiron\Http\Config\HttpConfig;
-use Chiron\Core\Config\SettingsConfig;
 use Chiron\Http\Http;
 use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Http\Middleware\AllowedHostsMiddleware;
@@ -22,6 +21,6 @@ final class HttpListenerBootloader extends AbstractBootloader
     // TODO : eventuellement virer le container dans la signature de la méthode et ajouter un FactoryInterface pour faire un ->build(XXXListener::class)
     public function boot(ListenerProvider $listener, Container $container): void
     {
-        $listener->attach(new PipelineListener($container));
+        $listener->add(new PipelineListener($container));
     }
 }

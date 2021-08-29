@@ -9,7 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Chiron\Http\Helper\Uri;
-use Chiron\Core\Config\SettingsConfig;
+use Chiron\Core\Core;
 use Chiron\Http\Config\HttpConfig;
 use Chiron\Http\Exception\DisallowedHostException;
 use Chiron\Http\Exception\SuspiciousOperationException;
@@ -25,15 +25,15 @@ final class AllowedHostsMiddleware implements MiddlewareInterface
 	private $allowedHosts;
 
     /**
-     * @param HttpConfig $httpConfig
-     * @param SettingsConfig   $settingsConfig
+     * @param HttpConfig $config
+     * @param Core   $core
      */
-    public function __construct(HttpConfig $httpConfig, SettingsConfig $settingsConfig)
+    public function __construct(HttpConfig $config, Core $core)
     {
-        $this->allowedHosts = $httpConfig->getAllowedHosts();
+        $this->allowedHosts = $config->getAllowedHosts();
 
         // Allow variants of localhost if ALLOWED_HOSTS list is empty and DEBUG is enabled.
-        if ($settingsConfig->isDebug() && $this->allowedHosts === []) {
+        if ($core->isDebug() && $this->allowedHosts === []) {
             // localhost and subdomain / IPv4 / IPv6 (brackets for URI use)
             $this->allowedHosts = ['.localhost', '127.0.0.1', '[::1]'];
         }

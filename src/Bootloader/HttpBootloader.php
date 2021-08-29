@@ -6,7 +6,7 @@ namespace Chiron\Http\Bootloader;
 
 use Chiron\Core\Container\Bootloader\AbstractBootloader;
 use Chiron\Http\Config\HttpConfig;
-use Chiron\Core\Config\SettingsConfig;
+use Chiron\Core\Core;
 use Chiron\Http\Http;
 use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Http\Middleware\AllowedHostsMiddleware;
@@ -16,7 +16,7 @@ use Chiron\Core\Exception\BootException;
 
 final class HttpBootloader extends AbstractBootloader
 {
-    public function boot(Http $http, HttpConfig $config, SettingsConfig $settings): void
+    public function boot(Http $http, HttpConfig $config, Core $core): void
     {
         // add the error handler middleware at the max top position in the middleware stack.
         if ($config->getHandleException() === true) {
@@ -36,7 +36,7 @@ final class HttpBootloader extends AbstractBootloader
         $http->addMiddleware(AllowedHostsMiddleware::class, Http::PRIORITY_MAX - 3);
 
         // assert the allowed hosts list is not empty, because the site will not work !
-        if ($config->getAllowedHosts() === [] && $settings->isDebug() === false) {
+        if ($config->getAllowedHosts() === [] && $core->isDebug() === false) {
             // TODO : créer une ImproperlyConfiguredException ou une BadConfigurationException ou une ConfigurationException dans le package chiron/core qui étendra de l'exception mére : BootException
             // TODO : code désactivé temporairement car lors de l'installation de l'application, comme on n'a pas encore de fichier .env le debug est mis par défaut à false !!!
             throw new BootException('http.ALLOWED_HOSTS list must not be empty in deployment.');

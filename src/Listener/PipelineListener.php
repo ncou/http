@@ -33,7 +33,7 @@ final class PipelineListener implements ListenerInterface
      *
      * @param object $event An event class instance
      */
-    public function process(object $event)
+    public function process(object $event): void
     {
         $this->container->bind(ServerRequestInterface::class, $event->getRequest());
     }
