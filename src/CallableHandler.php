@@ -7,11 +7,23 @@ namespace Chiron\Http;
 use Chiron\Container\ContainerAwareInterface;
 use Chiron\Container\ContainerAwareTrait;
 use Chiron\Http\Exception\Client\BadRequestHttpException;
-use Chiron\Injector\Exception\InvocationException;
+use Chiron\Http\Exception\MissingResponseException;
+use Chiron\Injector\Exception\InjectorException;
 use LogicException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+
+
+// TODO : eventuellement forcer la création d'une response. Eventuellement permettre à un EVENT / EVENTDISPATCHER de gérer ce cas là !!!!
+//https://github.com/spiral/framework/blob/d17c175e85165456fbd2d841c8e81165e371675c/src/Http/src/CallableHandler.php#L66
+//https://github.com/symfony/http-kernel/blob/409eba7fa9eccaeb419bd2f35edc9c81fb56323f/HttpKernel.php#L162
+//https://github.com/symfony/http-kernel/blob/0996d531074e0fb3f60b2af0a0d758c03fc47396/Tests/HttpKernelTest.php#L228
+
+
+// TODO : retourner plutot une HandlerException ????  https://github.com/zendframework/zend-stratigility/blob/master/src/Exception/MissingResponseException.php
+// https://github.com/symfony/http-kernel/blob/409eba7fa9eccaeb419bd2f35edc9c81fb56323f/Exception/ControllerDoesNotReturnResponseException.php
+// https://github.com/symfony/http-kernel/blob/409eba7fa9eccaeb419bd2f35edc9c81fb56323f/DataCollector/RequestDataCollector.php#L440
 
 // TODO : créer un package avec un faux ResponseInterface qui stock en raw la valeur de retour et qui via un middleware formatera la réponse.
 // https://github.com/yiisoft/data-response/blob/45937cb06c1bd057da6c6a18d65fab3182e87b55/src/DataResponse.php#L61
@@ -55,6 +67,7 @@ class CallableHandler implements RequestHandlerInterface, ContainerAwareInterfac
     /**
      * @param callable|array|string $callable A PHP callback matching signature of [RequestHandlerInterface->handle(ServerRequestInterface $request)]]. // TODO : non c'est faux ce n'est pas obligatoirement une signature de type requesthandler !!!!
      */
+    // TODO : renommer la variable $callable en $callback ????
     public function __construct($callable)
     {
         // TODO : ajouter une vérification si le callable a le bon format ? par exemple si c'est un is_callable ou is_object ou is_string ou is_array (éventeullement vérifier que la tableau a une taille de 2 éléments et que le 1er élément est une string ou un objet et que le 2eme élement est une string) ???? ou alors indiquer qu'une NotCallableException sera levée par le package Invoker lors du call !!!!
@@ -72,27 +85,85 @@ class CallableHandler implements RequestHandlerInterface, ContainerAwareInterfac
             // throw new MissingContainerException('Container is missing, use setContainer() method to set it.');
         }*/
 
-        // TODO : indiquer qu'une exception du type NotCallableException peut être levée si la callable n'est pas au bon format !!!!
+
+        // TRY/CATCH
+        //https://github.com/spiral/framework/blob/d17c175e85165456fbd2d841c8e81165e371675c/src/Router/src/CoreHandler.php#L200
+        // TODO : améliorer le code pour permettre de passer en paramétre l'exception précédente ($e) à cette http exception
+        // TODO : il faudrait surement lever une exception NotFoundHttpException dans le cas ou la mathode du callable n'existe pas dans la classe du callable, mais il faut pour cela séparer ce type d'exception dans la classe Injector pour ne pas remonter systématiquement une Exception InvocationException qui gére à la fois les probléme de callable qui n'existent pas et les callables qui n'ont pas le bon nombre d'arguments en paramétres.
+        //https://github.com/symfony/http-kernel/blob/6.0/Exception/BadRequestHttpException.php
+
+        $injector = $this->getContainer()->injector();
+
+        // TODO : indiquer qu'une exception du type NotCallableException peut être levée si la callable n'est pas au bon format !!!! <= en fait ch'est une exception de type InjectorException
         try {
+            // Resolve the callback in a valid php callable.
+            $controller = $injector->resolve($this->callable);
             // Use the request attributes as an array to help during the callable parameters resolutions.
-            $response = $this->getContainer()->injector()->invoke($this->callable, $request->getAttributes());
-        } catch (InvocationException $e) {
-            //https://github.com/spiral/framework/blob/d17c175e85165456fbd2d841c8e81165e371675c/src/Router/src/CoreHandler.php#L200
-            // TODO : améliorer le code pour permettre de passer en paramétre l'exception précédente ($e) à cette http exception
-            // TODO : il faudrait surement lever une exception NotFoundHttpException dans le cas ou la mathode du callable n'existe pas dans la classe du callable, mais il faut pour cela séparer ce type d'exception dans la classe Injector pour ne pas remonter systématiquement une Exception InvocationException qui gére à la fois les probléme de callable qui n'existent pas et les callables qui n'ont pas le bon nombre d'arguments en paramétres.
+            $response = $injector->invoke($controller, $request->getAttributes());
+        } catch (InjectorException $e) {
             throw new BadRequestHttpException();
         }
 
-        //https://github.com/spiral/framework/blob/d17c175e85165456fbd2d841c8e81165e371675c/src/Http/src/CallableHandler.php#L66
-        // TODO : il faudrait réussir via la reflexion à récupérer la ligne php ou se trouve le callable et utiliser ce file/line dans l'exception, ca serait plus simple à débugger !!! ou à minima si c'est un tableau on affiche le détail du tableau (qui sera au format, [class, 'method'])
+        // Throw an exception if the return type is not a valid response.
         if (! $response instanceof ResponseInterface) {
-            // TODO : retourner plutot une HandlerException ????  https://github.com/zendframework/zend-stratigility/blob/master/src/Exception/MissingResponseException.php
-            throw new LogicException(sprintf(
-                'Decorated callable request handler of type "%s" failed to produce a response.',
-                is_object($this->callable) ? get_class($this->callable) : gettype($this->callable)
-            ));
+            $message = sprintf('The controller must return a "%s" object but it returned %s.',
+                ResponseInterface::class,
+                $this->varToString($response)
+            );
+
+            // The user may have forgotten to return something!
+            if ($response === null) {
+                $message .= ' Did you forget to add a return statement somewhere in your controller?';
+            }
+
+            throw new MissingResponseException($message, $controller, __FILE__, __LINE__ - 17);
         }
 
         return $response;
+    }
+
+    /**
+     * Returns a human-readable string for the specified variable.
+     */
+    private function varToString($var): string
+    {
+        if (\is_object($var)) {
+            return sprintf('an object of type %s', \get_class($var));
+        }
+
+        if (\is_array($var)) {
+            $a = [];
+            foreach ($var as $k => $v) {
+                $a[] = sprintf('%s => ...', $k);
+            }
+
+            return sprintf('an array ([%s])', mb_substr(implode(', ', $a), 0, 255));
+        }
+
+        if (\is_resource($var)) {
+            return sprintf('a resource (%s)', get_resource_type($var));
+        }
+
+        if (null === $var) {
+            return 'null';
+        }
+
+        if (false === $var) {
+            return 'a boolean value (false)';
+        }
+
+        if (true === $var) {
+            return 'a boolean value (true)';
+        }
+
+        if (\is_string($var)) {
+            return sprintf('a string ("%s%s")', mb_substr($var, 0, 255), mb_strlen($var) > 255 ? '...' : '');
+        }
+
+        if (is_numeric($var)) {
+            return sprintf('a number (%s)', (string) $var);
+        }
+
+        return (string) $var;
     }
 }

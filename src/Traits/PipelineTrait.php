@@ -47,6 +47,8 @@ trait PipelineTrait
             $middleware = [$middleware, 'process'];
         }
 
+        // TODO : on devrait pas lever une exception si le $middleware résolu n'est pas du bon type ??? cad un type : callable|array|string, éventuellement utiliser la méthode Callback::isExecutable pour vérifier si le format du callable est correct !!!!
+
         return new CallableMiddleware($middleware);
     }
 
@@ -62,6 +64,8 @@ trait PipelineTrait
         if (is_string($handler) && is_subclass_of($handler, RequestHandlerInterface::class)) {
             $handler = [$handler, 'handle'];
         }
+
+        // TODO : on devrait pas lever une exception si le $handler résolu n'est pas du bon type ??? cad un type : callable|array|string, éventuellement utiliser la méthode Callback::isExecutable pour vérifier si le format du callable est correct !!!!
 
         return new CallableHandler($handler);
     }
@@ -90,7 +94,7 @@ trait PipelineTrait
 
         // Add all the middlewares in the pipeline.
         foreach ($this->middlewares as $middleware) {
-            if ($this->isContainerized($middleware)) { // TODO : rendre le code plus propre/lisible !!!
+            if ($this->isContainerized($middleware)) { // TODO : rendre le code plus propre/lisible !!! Passer par un mécanisme de Events ???
                 $middleware->setContainer($this->container);
             }
             $this->pipeline->pipe($middleware);
@@ -98,7 +102,7 @@ trait PipelineTrait
 
         // Add the final handler in the pipeline.
         if ($this->handler !== null) {
-            if ($this->isContainerized($this->handler)) { // TODO : rendre le code plus propre/lisible !!!
+            if ($this->isContainerized($this->handler)) { // TODO : rendre le code plus propre/lisible !!! Passer par un mécanisme de Events ???
                 $this->handler->setContainer($this->container);
             }
             $this->pipeline->fallback($this->handler);

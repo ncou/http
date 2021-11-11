@@ -23,7 +23,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
 //https://github.com/zendframework/zend-stdlib/blob/master/src/SplPriorityQueue.php
 
 // TODO : utiliser un ContainerAwareTrait !!!
-// TODO : créer un EventDispatcherAwareTrait ou un EventCapableTrait
+// TODO : créer un EventDispatcherAwareTrait ou un EventCapableTrait et l'utiliser dans cette classe !!!!
 final class Http implements RequestHandlerInterface, SingletonInterface
 {
     use PipelineTrait;
@@ -48,7 +48,7 @@ final class Http implements RequestHandlerInterface, SingletonInterface
     {
         $this->container = $container; // TODO : virer cette ligne et faire plutot étendre la classe de ContainerAwareTrait pour que via la mutation on puisse alimenter le container ????
         $this->dispatcher = $dispatcher; // TODO : virer cette ligne et faire plutot étendre la classe de EventCapableTrait pour que via la mutation on puisse alimenter le dispatcher ????
-
+        // Override the trait property $middlewares with another Transversable.
         $this->middlewares = new SplPriorityQueue();
     }
 

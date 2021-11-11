@@ -52,14 +52,7 @@ final class CallableMiddleware implements MiddlewareInterface, ContainerAwareInt
     // TODO : indiquer qu'une exception est levée si le container n'est pas défini par la méthode getContainer() !!!
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-
-
-
-        // TODO : bug dans le container invoke() à corriger !!!
-        //$this->container->bind(RequestHandlerInterface::class, $handler); // TODO : à virer c'est pour corriger un probléme dans l'impémentation du invoke/call qui ne prend pas les paramétres (notamment $handler) !!!!
-
-        // TODO : améliorer le code pour faire en sorte que juste un [$request, $handler] suffise sans avoir à préciser le nom du paramétre
-        $response = $this->getContainer()->injector()->invoke($this->callable, ['request' => $request, 'handler' => $handler]);
+        $response = $this->getContainer()->injector()->invoke($this->callable, [$request, $handler]);
 
         if ($response instanceof ResponseInterface) {
             return $response;
