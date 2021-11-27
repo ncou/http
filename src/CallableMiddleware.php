@@ -52,6 +52,7 @@ final class CallableMiddleware implements MiddlewareInterface, ContainerAwareInt
     // TODO : indiquer qu'une exception est levée si le container n'est pas défini par la méthode getContainer() !!!
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        // TODO : reprendre l'exemple de code du CallableHandler pour gérer la résolution du callable.
         $response = $this->getContainer()->injector()->invoke($this->callable, [$request, $handler]);
 
         if ($response instanceof ResponseInterface) {
@@ -62,6 +63,7 @@ final class CallableMiddleware implements MiddlewareInterface, ContainerAwareInt
             return $response->process($request, $handler);
         }*/
 
+        // TODO : reprendre l'exemple de code du CallableHandler pour gérer l'exception dans le cas ou la retourn n'est pas une response valide !!!!
         //throw new InvalidMiddlewareDefinitionException($this->callback);
         throw new LogicException(sprintf(
             'Decorated callable middleware of type "%s" failed to produce a response.',
