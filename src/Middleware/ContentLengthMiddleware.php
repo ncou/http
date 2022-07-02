@@ -9,7 +9,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-// TODO : regarder ici : https://github.com/reactphp/http/blob/master/src/StreamingServer.php#L359
+// TODO : regarder ici
+// https://github.com/reactphp/http/blob/1.x/src/Io/StreamingServer.php#L264
+
+//https://github.com/symfony/symfony/blob/6.2/src/Symfony/Component/HttpFoundation/Response.php#L259
 
 class ContentLengthMiddleware implements MiddlewareInterface
 {
@@ -21,23 +24,6 @@ class ContentLengthMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        //$a = 1 % 0;
-
-        //$foo = [bar];
-        //echo $foo;
-
-        //trigger_error("Fatal error", E_USER_ERROR);
-
-        //throw new \Chiron\Http\Exception\TOTO();
-
-        //throw new \Exception("Error Processing Request popopopo", 1);
-
-        //throw (new \Chiron\Http\Exception\Client\BadRequestHttpException())->setHeaders(['TOTO' => 'TITI']);
-        //throw new \Chiron\Http\Exception\Client\BadRequestHttpException('Error in the parsing !');
-
-        //throw new \Chiron\Http\Exception\Client\NotFoundHttpException();
-        //throw new \Chiron\Http\Exception\Client\NotFoundHttpException('toto is better than me ! enjoy !');
-
         $response = $handler->handle($request);
 
         // Don't add the content-length header if transfert-encoding is present.

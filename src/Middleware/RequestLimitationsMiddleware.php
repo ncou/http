@@ -10,6 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Chiron\Support\Str;
 
 class RequestLimitationsMiddleware implements MiddlewareInterface
 {
@@ -26,8 +27,9 @@ class RequestLimitationsMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        // TODO : Utiliser des constantes privées de classe pour les nombres ci dessous !!!!
         // *** Check limitation for the request uri length
-        if (mb_strlen($request->getServerParam('REQUEST_URI'), '8bit') > 2048) {
+        if (Str::byteLength($request->getServerParam('REQUEST_URI')) > 2048) {
             throw new UriTooLongHttpException();
         }
 
@@ -37,19 +39,19 @@ class RequestLimitationsMiddleware implements MiddlewareInterface
         }
 
         // *** Check limitation for the maximum size for all the headers
-        if (mb_strlen(serialize((array) $request->getHeaders()), '8bit') > 4096) {
+        if (Str::byteLength(serialize((array) $request->getHeaders())) > 4096) {
             throw new RequestHeaderFieldsTooLargeHttpException();
         }
 
         // *** Check limitations for each header maximum size (on the 'Name' and 'Value' header fields)
         foreach ($request->getHeaders() as $name => $values) {
-            // Max allowed length for the header value.
-            if (mb_strlen(serialize((array) $values), '8bit') > 2048) {
+            // Max allowed length for the header name
+            if (Str::byteLength($name) > 64) {
                 throw new RequestHeaderFieldsTooLargeHttpException();
             }
 
-            // Max allowed length for the header name
-            if (mb_strlen($name, '8bit') > 64) {
+            // Max allowed length for the header value.
+            if (Str::byteLength(serialize((array) $values)) > 2048) {
                 throw new RequestHeaderFieldsTooLargeHttpException();
             }
         }

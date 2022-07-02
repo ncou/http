@@ -4,32 +4,39 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-//use Chiron\Http\Psr\Response;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-// Add a default charset if the "Content-Type" header is found and there is not already a charset defined in this header.
-class CharsetByDefaultMiddleware implements MiddlewareInterface
+//https://github.com/symfony/symfony/blob/6.2/src/Symfony/Component/HttpFoundation/Response.php#L259
+// https://github.com/cakephp/cakephp/blob/5.x/src/Http/Response.php#L517
+
+// https://github.com/cakephp/cakephp/blob/dd9d8d563cb934daf0d564acf25f1b5308fae65a/src/Http/Response.php#L494
+// https://github.com/cakephp/cakephp/blob/5.x/src/Http/Response.php#L502
+
+// TODO : utiliser la regex suivante pour extraire le charset (tiré de django) : _charset_from_content_type_re = re.compile(r';\s*charset=(?P<charset>[^\s;]+)', re.I)
+//https://docs.djangoproject.com/fr/2.1/_modules/django/http/response/
+//https://github.com/django/django/blob/bb61f0186d5c490caa44f3e3672d81e14414d33c/django/http/response.py#L24
+
+// TODO : ajouter ce champ default_charset dans le fichier de config http.php comme c'est fait par django.
+//https://docs.djangoproject.com/en/4.0/ref/settings/#default-charset
+
+/**
+ * Add a default charset if the "Content-Type" header is found and there is not already a charset defined in this header.
+ */
+final class CharsetByDefaultMiddleware implements MiddlewareInterface
 {
-    /**
-     * @var string default charset to use
-     */
-    private $charset;
+    private string $charset;
 
     /**
      * Configure the default charset.
      *
-     * @param string $charset
+     * @param string $charset Default charset to use in http response.
      */
-    public function __construct(string $charset = 'UTF-8')
+    public function __construct(string $charset)
     {
-        // charset should have at least a length of 5 char, start with a letter and be alphanumeric with "_" or "-" as special char
-        if (! preg_match('/^[a-z][a-z0-9_-]{4,}$/i', $charset)) {
-            throw new InvalidArgumentException('Invalid charset value');
-        }
         $this->charset = strtolower($charset);
     }
 
@@ -40,25 +47,26 @@ class CharsetByDefaultMiddleware implements MiddlewareInterface
     {
         $response = $handler->handle($request);
 
-        // TODO : ajouter la possibilité de courcircuité ce middleware si on utilise un charset = '' dans ce cas on ne doit rien faire. Ajouter les PHPunit associé à ce nouveau IF
-        $response = $this->addDefaultCharset($response);
-
-        return $response;
+        return $this->withDefaultCharset($response);
     }
 
-    // @see : https://tools.ietf.org/html/rfc7231#section-3.1.1.2
-    private function addDefaultCharset(ResponseInterface $response): ResponseInterface
+    /**
+     * If needed add the default charset for the Content-Type header.
+     *
+     *  @see https://tools.ietf.org/html/rfc7231#section-3.1.1.2
+     */
+    private function withDefaultCharset(ResponseInterface $response): ResponseInterface
     {
+        // We can't add the default charset if there is not the Content-Type header.
         if (! $response->hasHeader('Content-Type')) {
-            // we can't add the default charset if there is not the Content-Type header.
             return $response;
         }
 
-        $contentType = $response->getHeaderLine('Content-Type');
+        $contentType = strtolower($response->getHeaderLine('Content-Type'));
 
-        if (stripos($contentType, 'charset') === false) {
+        if (! str_contains($contentType, 'charset')) {
             if ($this->isResponseTextual($contentType)) {
-                // add the charset to the content-type header
+                // Add the charset to the content-type header.
                 return $response->withHeader('Content-Type', $contentType . '; charset=' . $this->charset);
             }
         }
@@ -68,15 +76,26 @@ class CharsetByDefaultMiddleware implements MiddlewareInterface
 
     private function isResponseTextual(string $contentType): bool
     {
-        // Charset could be used for textual representation, so we whitlist a bunch of representation who will be textual
-        $whiteList = ['application/javascript', 'application/json', 'application/xml', 'application/rss+xml', 'application/atom+xml', 'application/xhtml', 'application/xhtml+xml'];
+        // TODO : utiliser la classe Mime pour avoir une fonction pour récupérer le mediapart et vérifier si le mime est textuel ???
+        // https://github.com/cakephp/cakephp/blob/5.x/src/Http/Response.php#L502
+
+        // Allow a bunch of representation who will be textual.
+        $allowed = [
+            'application/javascript',
+            'application/json',
+            'application/xml',
+            'application/rss+xml',
+            'application/atom+xml',
+            'application/xhtml',
+            'application/xhtml+xml'
+        ];
 
         // extract the media(mime) part from the Content-Type header
         $parts = explode(';', $contentType);
-        $mediaType = strtolower(trim(array_shift($parts)));
+        $mediaType = trim(array_shift($parts));
 
-        $isTextualOrWhitelisted = (stripos($contentType, 'text/') === 0 || in_array($mediaType, $whiteList));
+        $isTextualOrAllowed = (str_starts_with($contentType, 'text/') || in_array($mediaType, $allowed));
 
-        return $isTextualOrWhitelisted;
+        return $isTextualOrAllowed;
     }
 }

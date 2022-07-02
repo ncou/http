@@ -92,6 +92,10 @@ final class Http implements RequestHandlerInterface, SingletonInterface
         } catch (Throwable $e) {
             $this->dispatcher->dispatch(new ExceptionRaisedEvent($e, $request));
 
+            // TODO : regarder ici un exemple pour remplacer la response via un EVENT, ca permettra de switcher la réponse à l'exception par un truc custom.
+            //https://github.com/symfony/symfony/blob/3d00bafc2be5f40412bc9b968b222b9e24ca049e/src/Symfony/Component/HttpKernel/HttpKernel.php#L216
+            //throw $e;
+
             return $response = $this->handleException($e);
         } finally {
             $this->dispatcher->dispatch(new AfterRequestEvent($response));

@@ -4,8 +4,8 @@
 return [
     'buffer_size'      => 8 * 1024 * 1024,
     'protocol'         => '1.1',
-    //The base URL path of the Chiron installation. Will usually be "/" unless you have installed Chiron in a sub-directory.
-    'base_path'        => '/',
+    //The base URL path of the Chiron installation. Will usually be "/" unless you have installed Chiron in a sub-directory. // => tiré de DRUPAL
+    'base_path'        => '/', // TODO : renommer cette option en "force_script_name" ??? comme dans django ????
     'headers'          => [], // TODO : renommer en default_headers
     'middlewares'      => [],
     'handle_exception' => true, // TODO : renommer en debug_propagate_exceptions     => https://docs.djangoproject.com/en/3.1/ref/settings/#debug-propagate-exceptions
@@ -46,5 +46,5 @@ return [
 
     # Default charset to use for all HttpResponse objects, if a MIME type isn't
     # manually specified. It's used to construct the Content-Type header.
-    //DEFAULT_CHARSET = 'utf-8'
+    'default_charset' => 'utf-8'
 ];

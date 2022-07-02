@@ -14,12 +14,41 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+// TODO : transformer les exceptions des controllers sous forme de http exception :
+//https://github.com/spiral/router/blob/8ebf43cddf4e71802ba19e470bb7d26aed2d482f/src/CoreHandler.php#L186
+//https://github.com/cakephp/cakephp/blob/f43b3f58680ae869fb2e9fa56e65406cd1250702/src/Error/Renderer/WebExceptionRenderer.php#L112
+
+// TODO : Il se peut qu'on utilise des objets "Reference::class" dans les paramétres lors de l'appel du invoke, il faudrait surement résoudre ces valeurs via un Reference->resolve($container), car sinon on risque d'avoir une incompatibilité du parameterNamedType lorsqu'on va vouloir appeller le callback final !!!
+
+// TODO : lors du invoke on passe tous les attributs stockés dans la request histoire de résoudre les paramétres lors du invoke, mais on devrait seulement utiliser un unique attribut qui stock les paramétres comme c'est fait dans cakephp via l'attribut "pass", cela permettra aussi de caster correctement ces paramétres de string vers le bon format !!!!
+//https://github.com/cakephp/cakephp/blob/289a8cca66740c23af3d9ee7372b2c6f014129bc/src/Controller/ControllerFactory.php#L138
+//https://github.com/cakephp/cakephp/blob/289a8cca66740c23af3d9ee7372b2c6f014129bc/src/Controller/ControllerFactory.php#L264
+//https://github.com/cakephp/cakephp/blob/289a8cca66740c23af3d9ee7372b2c6f014129bc/src/Controller/ControllerFactory.php#L264
+//https://github.com/cakephp/cakephp/blob/289a8cca66740c23af3d9ee7372b2c6f014129bc/src/Controller/ControllerFactory.php#L507
+//https://github.com/cakephp/cakephp/blob/29afeef7d45c2d54be7b69aa378af31574c61475/tests/test_app/TestApp/Controller/DependenciesController.php#L46
+//https://github.com/cakephp/cakephp/blob/4981fcd4de9941174a9e3f4430278f71d2eb81b9/src/Routing/Route/Route.php#L486
+
+// TODO : attention dans la request on a seulement des attributs string qui ont été passé dans l'url, on devra donc les "caster" au bon format si on les passe en paramétre de la fonction du controller !!!!
+//https://github.com/cakephp/cakephp/blob/32e3c532fea8abe2db8b697f07dfddf4dfc134ca/src/Controller/ControllerFactory.php#L203
+//https://github.com/cakephp/cakephp/blob/32e3c532fea8abe2db8b697f07dfddf4dfc134ca/src/Controller/ControllerFactory.php#L255
+
+// TODO : PHP8 Attributes. Utiliser un attribut genre #[JsonOuput] ou #[HtmlOutput] pour forcer la conversion de la response au format texte ou array en ResponsaInterface. Pour ce faire il faudra ajouter un trigger Event($request, $controller, $response) lorsque la response n'est pas une instanceof ResponseInterface, et ajouter un listener qui se chargera de récupérer les attributs attachés au callable via une reflection, et ensuite de formater la réponse à retourner.
+//https://github.com/windwalker-io/core/blob/master/src/Core/Attributes/Json.php
+//https://github.com/windwalker-io/core/blob/master/src/Core/Attributes/JsonApi.php
+//https://github.com/windwalker-io/core/tree/master/src/Core/Attributes
+
+/*
+// TODO : code à utiliser dans le if lorsqu'on n'a pas recu de réponse pour aller chercher les attributs de la méthode utilisée en callable !!!!
+$callable = \Closure::fromCallable($controller);
+$reflection = new \ReflectionFunction($callable);
+die(var_dump($reflection->getAttributes()));
+*/
+
 
 // TODO : eventuellement forcer la création d'une response. Eventuellement permettre à un EVENT / EVENTDISPATCHER de gérer ce cas là !!!!
 //https://github.com/spiral/framework/blob/d17c175e85165456fbd2d841c8e81165e371675c/src/Http/src/CallableHandler.php#L66
 //https://github.com/symfony/http-kernel/blob/409eba7fa9eccaeb419bd2f35edc9c81fb56323f/HttpKernel.php#L162
 //https://github.com/symfony/http-kernel/blob/0996d531074e0fb3f60b2af0a0d758c03fc47396/Tests/HttpKernelTest.php#L228
-
 
 // TODO : retourner plutot une HandlerException ????  https://github.com/zendframework/zend-stratigility/blob/master/src/Exception/MissingResponseException.php
 // https://github.com/symfony/http-kernel/blob/409eba7fa9eccaeb419bd2f35edc9c81fb56323f/Exception/ControllerDoesNotReturnResponseException.php
@@ -76,6 +105,7 @@ class CallableHandler implements RequestHandlerInterface, ContainerAwareInterfac
 
     // TODO : indiquer dans la phpDoc tous les typehints possibles pour $callable !!!
     // TODO : indiquer qu'une exception est levée si le container n'est pas défini par la méthode getContainer() !!!
+    //https://github.com/cakephp/cakephp/blob/32e3c532fea8abe2db8b697f07dfddf4dfc134ca/src/Controller/ControllerFactory.php#L124
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         // TODO : faire un $this->hasContainer et si le résultat est false dans ce cas lever une une HandlerException en indiquant que le container doit être setter pour executer le handler ????
@@ -92,16 +122,40 @@ class CallableHandler implements RequestHandlerInterface, ContainerAwareInterfac
         // TODO : il faudrait surement lever une exception NotFoundHttpException dans le cas ou la mathode du callable n'existe pas dans la classe du callable, mais il faut pour cela séparer ce type d'exception dans la classe Injector pour ne pas remonter systématiquement une Exception InvocationException qui gére à la fois les probléme de callable qui n'existent pas et les callables qui n'ont pas le bon nombre d'arguments en paramétres.
         //https://github.com/symfony/http-kernel/blob/6.0/Exception/BadRequestHttpException.php
 
+        // TODO : EVENT pour remplacer la response !!!!
+        //https://github.com/symfony/http-kernel/blob/409eba7fa9eccaeb419bd2f35edc9c81fb56323f/HttpKernel.php#L162
+
         $injector = $this->getContainer()->injector();
+
+        $outputLevel = ob_get_level(); // TODO : renommer la variable en $level ???
+        ob_start();
+
+        $output = '';
 
         // TODO : indiquer qu'une exception du type NotCallableException peut être levée si la callable n'est pas au bon format !!!! <= en fait ch'est une exception de type InjectorException
         try {
             // Resolve the callback in a valid php callable.
             $controller = $injector->resolve($this->callable);
             // Use the request attributes as an array to help during the callable parameters resolutions.
-            $response = $injector->invoke($controller, $request->getAttributes());
+            $response = $injector->invoke($controller, $request->getAttributes()); // TODO : au lieu de passer les requestAttributes, il faudrait plutot récupérer l'objet CurrentRoute::class et passer les MatchedParameters + les route valeur par defaults dans les paramétres de l'appel à l'injector !!!
         } catch (InjectorException $e) {
-            throw new BadRequestHttpException();
+            ob_get_clean(); // TODO : c'est pas plutot des ob_end_clean() ????
+            throw new BadRequestHttpException($e->getMessage()); // TODO : je pense qu'il faudrait simplement laisser l'exception se propager et ne pas la transformer en BadRequestHttpException !!!! Eventuellement prévoir un mapping des exception du controller: exemple : https://github.com/spiral/router/blob/8ebf43cddf4e71802ba19e470bb7d26aed2d482f/src/CoreHandler.php#L186   ou    https://github.com/spiral/hmvc/blob/2a626ad6d96026827ecb728ba8ab54e3d8333361/src/AbstractCore.php#L43          Eventuellement créer une ControllerException pour gérer ce type de cas d'errreurs !!!!
+        } catch (\Throwable $e) {
+            // TODO : vérifier si ce catch sert à quelque chose car en cas d'exception on passera dans le finally qui va faire un clean() et ensuite on propagera l'exception, donc ca devrait être inutile de faire ce catch Throwable !!!
+            ob_get_clean(); // TODO : c'est pas plutot des ob_end_clean() ????
+            throw $e;
+        } finally {
+            while (ob_get_level() > $outputLevel) { // while (ob_get_level() > $outputLevel + 1) {
+                $output = ob_get_clean() . $output;
+            }
+        }
+
+        // Always glue buffered output.
+        if ($response instanceof ResponseInterface) {
+            if ($output !== '' && $response->getBody()->isWritable()) {
+                $response->getBody()->write($output);
+            }
         }
 
         // Throw an exception if the return type is not a valid response.
@@ -116,7 +170,7 @@ class CallableHandler implements RequestHandlerInterface, ContainerAwareInterfac
                 $message .= ' Did you forget to add a return statement somewhere in your controller?';
             }
 
-            throw new MissingResponseException($message, $controller, __FILE__, __LINE__ - 17);
+            throw new MissingResponseException($message, $controller, __FILE__, __LINE__ - 33);
         }
 
         return $response;

@@ -24,6 +24,16 @@ use Psr\Http\Message\ServerRequestInterface;
 use Chiron\Http\Config\HttpConfig;
 use Chiron\Http\Exception\DisallowedHostException;
 
+use Chiron\Event\EventDispatcher;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Chiron\Event\ListenerProvider;
+use Psr\EventDispatcher\ListenerProviderInterface;
+
+use Psr\Http\Message\ResponseFactoryInterface;
+use Nyholm\Psr7\Factory\Psr17Factory;
+
+use Chiron\Http\Listener\PipelineListener;
+
 class RequestIdMiddlewareTest extends TestCase
 {
     private $container;
@@ -31,6 +41,17 @@ class RequestIdMiddlewareTest extends TestCase
     public function setUp(): void
     {
         $this->container = new Container();
+
+        // TODO : start - attention ce code n'est pas propre il faudrait un provider dans le package chiron/core pour initialiser ce binding !!!!
+        $this->container->singleton(EventDispatcher::class);
+        $this->container->singleton(EventDispatcherInterface::class, EventDispatcher::class);
+
+        $listener = new ListenerProvider();
+        $listener->add(new PipelineListener($this->container));
+
+        $this->container->singleton(ListenerProviderInterface::class, $listener);
+
+        $this->container->singleton(ResponseFactoryInterface::class, Psr17Factory::class);
     }
 
     public function testRequestId(): void
@@ -57,7 +78,7 @@ class RequestIdMiddlewareTest extends TestCase
 // TODO : méthodes à mettre dans une classe TestCase dédiée et étendre de cette classe pour nos tests http !!!!
     protected function httpCore(array $middlewares = [], Closure $handler): Http
     {
-        $http = new Http($this->container);
+        $http = $this->container->get(Http::class);
 
         foreach ($middlewares as $middleware) {
             $http->addMiddleware($middleware);

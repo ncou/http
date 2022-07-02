@@ -44,9 +44,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 /**
  * Handles common security headers in a convenient way.
  */
-class SecurityHeadersMiddleware implements MiddlewareInterface
+final class SecurityHeadersMiddleware implements MiddlewareInterface
 {
-    private $security = [];
+    private array $security = [];
 
     /**
      * Constructor.

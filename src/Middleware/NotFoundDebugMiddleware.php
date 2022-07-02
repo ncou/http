@@ -33,6 +33,7 @@ final class NotFoundDebugMiddleware implements MiddlewareInterface
         try {
             $response = $handler->handle($request);
         } catch(NotFoundHttpException $e){
+            // TODO : faire ce bout de code uniquement si on est en mode APP_DEBUG === true, sinon on fait un throw $e pour laisser l'exception se propager !!!! ou alors vérifier dans le bootloader que ce middleware est ajouté uniquement si le mode debug est activé.
             $response = $this->displayRouteNotFoundDetails($request);
         }
 

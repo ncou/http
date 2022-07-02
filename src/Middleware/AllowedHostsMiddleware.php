@@ -22,7 +22,7 @@ use Chiron\Support\Str;
 final class AllowedHostsMiddleware implements MiddlewareInterface
 {
 	/** @var array */
-	private $allowedHosts;
+	private array $allowedHosts;
 
     /**
      * @param HttpConfig $config

@@ -14,6 +14,7 @@ use InvalidArgumentException;
 use Chiron\Container\ContainerAwareInterface;
 use Chiron\Container\ContainerAwareTrait;
 
+// TODO : utiliser un trait pour manipuler les parameters, par exemple : https://github.com/windwalker-io/utilities/blob/master/src/Options/OptionAccessTrait.php
 
 /**
  * Defines a parameterized middleware binding (store the middleware name + the parameters to inject after initialisation)
@@ -48,6 +49,7 @@ final class MiddlewareBinding implements MiddlewareInterface, ContainerAwareInte
      */
     private function assertParameterizedMiddleware(string $middleware): void
     {
+        // TODO : lever plutot une ImproperlyConfiguredException::class ????
         if (! is_subclass_of($middleware, ParameterizedMiddlewareInterface::class)) {
                 throw new InvalidArgumentException(sprintf(
                 'Middleware "%s" should implement interface "%s".',
@@ -60,7 +62,7 @@ final class MiddlewareBinding implements MiddlewareInterface, ContainerAwareInte
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         // Resolve the middleware class name & inject parameters.
-        $middleware = $this->container->injector()->build($this->className);
+        $middleware = $this->container->injector()->build($this->className); // TODO : il faut surement gerer les erreurs et faire un catch du injectorException::class
         $middleware->setParameters($this->parameters);
 
         return $middleware->process($request, $handler);

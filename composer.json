@@ -1,9 +1,24 @@
 {
     "name": "chiron/http",
     "description": "Give it a nice description!",
-    "keywords": [],
     "license": "MIT",
     "type": "library",
+    "keywords": [],
+    "require": {
+        "php": "^8.0 || ^8.1",
+        "chiron/core": "^1.0",
+        "chiron/http-error-handler": "^1.0",
+        "chiron/http-exceptions": "^2.1",
+        "chiron/http-message-util": "^1.0",
+        "chiron/pipeline": "^3.5",
+        "chiron/psr17factoryfinder": "^0.1"
+    },
+    "require-dev": {
+        "chiron/devtools": "^1.0",
+        "nyholm/psr7": "^1.4"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "Chiron\\Http\\": "src/"
@@ -14,39 +29,35 @@
             "Chiron\\Http\\Test\\": "tests/"
         }
     },
-    "require": {
-        "php": "^8.0|^8.1",
-        "chiron/core": "^1.0",
-        "chiron/pipeline": "^3.5",
-        "chiron/http-message-util": "^1.0",
-        "chiron/http-exceptions": "^2.1",
-        "chiron/http-error-handler": "^1.0",
-        "chiron/psr17factoryfinder": "^0.1"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^9.5",
-        "phpstan/phpstan": "^0.12",
-        "phpstan/phpstan-phpunit": "^0.12",
-        "chiron/coding-standard": "^3.0",
-        "nyholm/psr7": "^1.4"
-    },
-    "scripts": {
-        "phpunit": "phpunit --colors=always",
-        "test-coverage": "phpunit --coverage-clover clover.xml",
-        "phpstan": "phpstan analyse src --level=max",
-        "check-style": "phpcs src tests",
-        "fix-style": "phpcbf src tests"
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "phpstan/extension-installer": true,
+            "ergebnis/composer-normalize": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "captainhook/plugin-composer": true,
+            "chiron/devtools": true
+        }
     },
     "extra": {
+        "captainhook": {
+            "force-install": true
+        },
         "chiron": {
-            "providers": [
-                "Chiron\\Http\\Provider\\HttpFactoriesServiceProvider"
-            ],
             "bootloaders": [
                 "Chiron\\Http\\Bootloader\\PublishHttpBootloader",
                 "Chiron\\Http\\Bootloader\\HttpBootloader",
                 "Chiron\\Http\\Bootloader\\HttpListenerBootloader"
+            ],
+            "providers": [
+                "Chiron\\Http\\Provider\\HttpFactoriesServiceProvider"
             ]
+        },
+        "chiron/devtools": {
+            "command-prefix": "dev"
+        },
+        "ramsey/conventional-commits": {
+            "configFile": "conventional-commits.json"
         }
     }
 }

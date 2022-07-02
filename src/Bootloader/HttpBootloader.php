@@ -13,6 +13,7 @@ use Chiron\Http\Middleware\AllowedHostsMiddleware;
 use Chiron\Http\Middleware\NotFoundDebugMiddleware;
 use Chiron\Http\Middleware\TagRequestMiddleware;
 use Chiron\Core\Exception\BootException;
+use Chiron\Http\Middleware\SubFolderMiddleware;
 
 final class HttpBootloader extends AbstractBootloader
 {
@@ -29,11 +30,16 @@ final class HttpBootloader extends AbstractBootloader
             $http->addMiddleware(TagRequestMiddleware::class, Http::PRIORITY_MAX - 1);
         }
 
+        // TODO : ajouter ici le middleware subfolder cad avant le NotFoundDebugMiddleware sinon le uri->getPath() qui est affiché dans le template technical_404 ne sera pas bon, et donc on comprendra pas le debug !!!
+        //$http->addMiddleware(SubFolderMiddleware::class, Http::PRIORITY_MAX - 2); // TODO : attention il faut pouvoir passer le basePath comme prefix à ce middleware. Ou null si on doit autodétecter le sous répertoire !!!!
+
+        // TODO : ajouter ce middleware seulement si on est en mode APP_DEBUG === true
+
         // add the debugger for route not found middleware in the middleware stack.
-        $http->addMiddleware(NotFoundDebugMiddleware::class, Http::PRIORITY_MAX - 2);
+        $http->addMiddleware(NotFoundDebugMiddleware::class, Http::PRIORITY_MAX - 3);
 
         // add the 'allowed hosts' middleware in the middleware stack.
-        $http->addMiddleware(AllowedHostsMiddleware::class, Http::PRIORITY_MAX - 3);
+        $http->addMiddleware(AllowedHostsMiddleware::class, Http::PRIORITY_MAX - 4);
 
         // assert the allowed hosts list is not empty, because the site will not work !
         if ($config->getAllowedHosts() === [] && $core->isDebug() === false) {

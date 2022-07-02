@@ -11,6 +11,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 //https://github.com/middlewares/negotiation/blob/master/src/ContentType.php
+//https://github.com/guzzle/guzzle/blob/7.0/src/PrepareBodyMiddleware.php#L39
 
 class ContentTypeByDefaultMiddleware implements MiddlewareInterface
 {

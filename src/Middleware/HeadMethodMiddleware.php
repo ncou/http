@@ -52,7 +52,7 @@ final class HeadMethodMiddleware implements MiddlewareInterface
 
         // As per RFC, HEAD request can't have a body.
         if (strtoupper($request->getMethod()) === RequestMethod::HEAD) {
-            // TODO : il faudrait surement enlever le ContentType et le Content-Lenght ? non ????
+            // TODO : il faudrait surement enlever le ContentType et le Content-Lenght ? non ???? Hummm je pense que le content-length est à garder car il simule la taille de la page qui aurait du être affichée.
             $emptyBody = $this->streamFactory->createStream();
             $response = $response->withBody($emptyBody);
         }

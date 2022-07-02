@@ -7,7 +7,6 @@ namespace Chiron\Http\Traits;
 use Chiron\Container\Container;
 use Chiron\Http\CallableHandler;
 use Chiron\Http\CallableMiddleware;
-use Chiron\Http\MiddlewareBinding;
 use Chiron\Pipeline\Pipeline;
 use InvalidArgumentException;
 use Psr\Http\Server\MiddlewareInterface;

@@ -35,6 +35,8 @@ use Psr\EventDispatcher\ListenerProviderInterface;
 use Chiron\Http\Bootloader\HttpListenerBootloader;
 use Chiron\Http\CallableHandler;
 
+use Chiron\Http\Listener\PipelineListener;
+
 // TODO : faire en sorte de ne plus avoir besoin des classes Fixtures\CallableMiddleware et Fixtures\CallableRequestHandler, essayer d'utiliser directement le Http\CallableHandler
 
 class PipelineListenerTest extends TestCase
@@ -65,7 +67,7 @@ class PipelineListenerTest extends TestCase
             return new Response();
         });
 
-        $http = new Http($container);
+        $http = $container->get(Http::class);
         $http->addMiddleware($middleware_1);
         $http->addMiddleware($middleware_2);
         $http->setHandler($fallback);
@@ -88,7 +90,7 @@ class PipelineListenerTest extends TestCase
         });
 
         $container = $this->makeContainer();
-        $http = new Http($container);
+        $http = $container->get(Http::class);
         $http->setHandler($fallback);
 
         $response = $http->handle(new ServerRequest('GET', 'http://foo.bar'));
@@ -103,10 +105,11 @@ class PipelineListenerTest extends TestCase
         // TODO : start - attention ce code n'est pas propre il faudrait un provider dans le package chiron/core pour initialiser ce binding !!!!
         $container->singleton(EventDispatcher::class);
         $container->singleton(EventDispatcherInterface::class, EventDispatcher::class);
-        $container->singleton(ListenerProvider::class);
-        $container->singleton(ListenerProviderInterface::class, ListenerProvider::class);
 
-        $container->call([HttpListenerBootloader::class, 'boot']);
+        $listener = new ListenerProvider();
+        $listener->add(new PipelineListener($container));
+
+        $container->singleton(ListenerProviderInterface::class, $listener);
         // TODO : end
 
         return $container;
