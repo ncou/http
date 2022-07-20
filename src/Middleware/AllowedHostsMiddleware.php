@@ -15,6 +15,8 @@ use Chiron\Http\Exception\DisallowedHostException;
 use Chiron\Http\Exception\SuspiciousOperationException;
 use Chiron\Support\Str;
 
+//https://github.com/laravel/framework/blob/6c0ffe3b274aeff16661efc33921ae5211b5f7d2/src/Illuminate/Http/Middleware/TrustHosts.php#L67
+
 /**
  * Allowed Hosts verification.
  * To avoid host header injection attacks, you should provide a list of allowed hosts.

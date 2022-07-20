@@ -84,6 +84,11 @@ final class HttpConfig extends AbstractInjectableConfig
         return $this->get('disallowed_user_agents');
     }
 
+    public function getDefaultCharset(): string
+    {
+        return $this->get('default_charset');
+    }
+
     /*
     // TODO : voir pour utiliser ce bout de code !!!!
     function isCharset($charset = '')

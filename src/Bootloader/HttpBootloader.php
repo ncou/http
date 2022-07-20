@@ -14,6 +14,9 @@ use Chiron\Http\Middleware\NotFoundDebugMiddleware;
 use Chiron\Http\Middleware\TagRequestMiddleware;
 use Chiron\Core\Exception\BootException;
 use Chiron\Http\Middleware\SubFolderMiddleware;
+use Chiron\Http\Middleware\CharsetByDefaultMiddleware;
+use Chiron\Http\Middleware\ContentLengthMiddleware;
+use Chiron\Core\Exception\ImproperlyConfiguredException;
 
 final class HttpBootloader extends AbstractBootloader
 {
@@ -33,6 +36,12 @@ final class HttpBootloader extends AbstractBootloader
         // TODO : ajouter ici le middleware subfolder cad avant le NotFoundDebugMiddleware sinon le uri->getPath() qui est affiché dans le template technical_404 ne sera pas bon, et donc on comprendra pas le debug !!!
         //$http->addMiddleware(SubFolderMiddleware::class, Http::PRIORITY_MAX - 2); // TODO : attention il faut pouvoir passer le basePath comme prefix à ce middleware. Ou null si on doit autodétecter le sous répertoire !!!!
 
+        // TODO : voir si on ajoute vraiment ce middleware !!!
+        //$http->addMiddleware(new CharsetByDefaultMiddleware($config->getDefaultCharset()), Http::PRIORITY_MAX - 2);
+
+        // TODO : voir si on ajoute vraiment ce middleware !!!
+        //$http->addMiddleware(ContentLengthMiddleware::class, Http::PRIORITY_MAX - 2);
+
         // TODO : ajouter ce middleware seulement si on est en mode APP_DEBUG === true
 
         // add the debugger for route not found middleware in the middleware stack.
@@ -43,9 +52,7 @@ final class HttpBootloader extends AbstractBootloader
 
         // assert the allowed hosts list is not empty, because the site will not work !
         if ($config->getAllowedHosts() === [] && $core->isDebug() === false) {
-            // TODO : créer une ImproperlyConfiguredException ou une BadConfigurationException ou une ConfigurationException dans le package chiron/core qui étendra de l'exception mére : BootException
-            // TODO : code désactivé temporairement car lors de l'installation de l'application, comme on n'a pas encore de fichier .env le debug est mis par défaut à false !!!
-            throw new BootException('http.ALLOWED_HOSTS list must not be empty in deployment.');
+            throw new ImproperlyConfiguredException('http.ALLOWED_HOSTS list must not be empty in deployment.');
         }
 
         // add the defined middlewares with default priority.

@@ -107,6 +107,26 @@ class CharsetByDefaultMiddlewareTest extends TestCase
 
 
 
+    public function testWithContentTypeHeaderWithoutCharsetButTextualAndCharsetLowercase(): void
+    {
+        $handler = static function (ServerRequestInterface $request) {
+            $response = new Response();
+            $response = $response->withHeader('Content-Type', 'text/foobar');
+
+            return $response;
+        };
+
+        $middleware = new CharsetByDefaultMiddleware('UTF-8');
+        $core = $this->httpCore([$middleware], $handler);
+
+        $response = $this->get($core, '/');
+
+        self::assertTrue($response->hasHeader('Content-Type'));
+        self::assertEquals('text/foobar; charset=utf-8', $response->getHeaderLine('Content-Type'));
+    }
+
+
+
     public function testWithContentTypeUpperCaseWithoutCharset(): void
     {
         $handler = static function (ServerRequestInterface $request) {

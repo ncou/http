@@ -7,6 +7,8 @@ namespace Chiron\Http\Helper;
 use Psr\Http\Message\ServerRequestInterface;
 use Chiron\Support\Str;
 
+//https://github.com/laravel/framework/blob/6c0ffe3b274aeff16661efc33921ae5211b5f7d2/src/Illuminate/Http/Middleware/TrustHosts.php#L67
+
 final class Uri
 {
     /**

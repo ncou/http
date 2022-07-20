@@ -25,6 +25,8 @@ use Psr\Http\Server\RequestHandlerInterface;
  * routing logic which could potentially append content to the response body
  * https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4
  */
+
+// TODO : à virer car on gérer le cas du HEAD dans le SapiEngine car on on ne va pas emettre le body dans le SapiEmitter !!!
 //https://github.com/slimphp/Slim/blob/4.x/Slim/App.php#L224
 final class HeadMethodMiddleware implements MiddlewareInterface
 {
